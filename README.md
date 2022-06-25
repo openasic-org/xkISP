@@ -64,12 +64,10 @@ Modify `setup_env.sh` to add the installed *vivado* or *vitis hls* path under th
 
 ##  Test vector generate
 Before starting the project, we need use xkISP Cmodel `isp`to generate test vectors. These is an test image `input.raw`and default configuration  `hls_param.txt`  in `tv`.
-> cd tv
-
+> cd tv\
 > ./isp -i input.raw -c hls_param.txt
 
-If you want to use your own image, please modify makefile
-
+If you want to use your own image, please modify makefile\
 > ./isp -i "your test image" -c "your configuration"
 
 **Note**：the configuration is fixed in each module level verification. You should modify the verification code files( `tb_"*module*".cpp` in `tb`) to match the configuration of Cmodel. We will modify the  verification code files to read configuration file in the future update.
@@ -95,16 +93,13 @@ Under the kernel directory, double-click `.prj` to enter its configuration inter
 
 3.Set test images path and configuration parameters
 Enter the `host.cpp`
- - image path
- 
+ - image path\
    Modify the  "*TOP_SRC1*" and "*TOP_DST1*" to your image paths. 
- - image resolution
- 
-   "*IMAGE_HEIGHT*" and "*IMAGE_WIDTH*" determine the input image height and witdh. 
-   "*upper_left_x*", "*upper_left_y*" , *"lower_right_x**" ,"*lower_right_y*"   determine the pixel positions of the upper left and lower right corners of the cropped image.
-   "*CROP_HEIGHT*" and "*CROP_WIDTH*" determine the output image height and width. They need to be matched with  "*upper_left_x*", "*upper_left_y*" , *"lower_right_x**" ,"*lower_right_y*"
- - module configuration
- 
+ - image resolution\
+   "*IMAGE_HEIGHT*" and "*IMAGE_WIDTH*" determine the input image height and witdh.\ 
+   "*upper_left_x*", "*upper_left_y*" , *"lower_right_x**" ,"*lower_right_y*"   determine the pixel positions of the upper left and lower right corners of the cropped image.\
+   "*CROP_HEIGHT*" and "*CROP_WIDTH*" determine the output image height and width. They need to be matched with  "*upper_left_x*", "*upper_left_y*" , *"lower_right_x**" ,"*lower_right_y*"\
+ - module configuration\
    You can find them in the  `host.cpp` 
 
 4.Compile and run
