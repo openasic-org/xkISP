@@ -47,7 +47,7 @@ xkISP
 
 
   `fpga` contains code files for top level integration verification.
-  `src` contains source code files which are the single module of the xk-isp project and head files(`file_define.h`) for single module test.
+  `src` contains source code files which are the single module of the xkISP project and head files(`file_define.h`) for single module test.
   `tb` contains  code files for verificating the function consistency with  Cmodel(`tv/isp`)  in the module level.
   `tcl` contains  the scripts for  execuating the code files in the `tb`("*module*".tcl) and adding the pragma command for the  code files in the `src` ("*module*"_directives.tcl). Makefile in the  `tcl`  is used for module level verification.
   `tv` contains  the files for generating the test vectors. You can read the `readme_for_tv` for more details.
@@ -63,7 +63,7 @@ Modify `setup_env.sh` to add the installed *vivado* or *vitis hls* path under th
 > source setup_env.sh
 
 ##  Test vector generate
-Before starting the project, we need use xk-isp Cmodel `isp`to generate test vectors. These is an test image `input.raw`and default configuration  `hls_param.txt`  in `tv`.
+Before starting the project, we need use xk Cmodel `isp`to generate test vectors. These is an test image `input.raw`and default configuration  `hls_param.txt`  in `tv`.
 > cd tv
 
 > ./isp -i input.raw -c hls_param.txt
