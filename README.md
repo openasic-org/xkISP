@@ -96,12 +96,15 @@ Under the kernel directory, double-click `.prj` to enter its configuration inter
 3.Set test images path and configuration parameters
 Enter the `host.cpp`
  - image path
+ 
    Modify the  "*TOP_SRC1*" and "*TOP_DST1*" to your image paths. 
  - image resolution
+ 
    "*IMAGE_HEIGHT*" and "*IMAGE_WIDTH*" determine the input image height and witdh. 
    "*upper_left_x*", "*upper_left_y*" , *"lower_right_x**" ,"*lower_right_y*"   determine the pixel positions of the upper left and lower right corners of the cropped image.
    "*CROP_HEIGHT*" and "*CROP_WIDTH*" determine the output image height and width. They need to be matched with  "*upper_left_x*", "*upper_left_y*" , *"lower_right_x**" ,"*lower_right_y*"
  - module configuration
+ 
    You can find them in the  `host.cpp` 
 
 4.Compile and run
