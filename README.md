@@ -74,7 +74,7 @@ If you want to use your own image, please modify makefile\
 
 ## module level verification
 For module level  verification, you can use the script `Makefile` in the  `tcl`. Of course, you can modify the `Makefile`as needed
-> cd tcl
+> cd tcl\
 > make
 
 ## Top level integration verification
