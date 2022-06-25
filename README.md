@@ -77,15 +77,17 @@ For module level  verification, you can use the script `Makefile` in the  `tcl`.
 > make
 
 ## Top level integration verification
-For top level integration verification, you can use the vitis GUI. The example is shown as follows:
-1.Create a new project using the vitis. 
+For top level integration verification, you can use the vitis GUI. The example is shown as follows:  
+
+1.Create a new project using the vitis.   
+
 Import `top.h` and `top.cpp` under kernels and  `host.cpp`, `top.h`, `xcl2.cpp`, `xcl2.hpp` under host platform(x86).
 
 ![输入图片说明](imgs/1.png)
 
 ![输入图片说明](imgs/2.png)
 
-2.Set top file
+2.Set top file  
 Under the kernel directory, double-click `.prj` to enter its configuration interface, click ![输入图片说明](imgs/3.png) and set the “*isp_top*” function as the top level.
 
 ![输入图片说明](imgs/5.png)
