@@ -54,7 +54,7 @@ xkISP
 `setup_env.sh`  is used to designate the development tools. (Vitis HLS or Vivado)
 # Usage
 Clone this repo:
-> git clone https://github.com/openasic-org/xkISP.git\
+> git clone https://github.com/openasic-org/xkISP.git  
 > cd xkISP
 
 ##  Environment setup
