@@ -55,6 +55,7 @@ xkISP
 # Usage
 Clone this repo:
 > git clone https://github.com/openasic-org/xkISP.git
+
 > cd xkISP
 
 ##  Environment setup
