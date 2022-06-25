@@ -1,0 +1,5 @@
+set_directive_top -name yuv444dns "yuv444dns"
+set_directive_pipeline "yuv444dns/yuvdns_row"
+set_directive_loop_tripcount -max 7680 -avg 1680 "yuv444dns/rawdyuvdns_row"
+set_directive_pipeline "yuv444dns/yuv444dns_col"
+set_directive_loop_tripcount -max 4320 -avg 1080 "yuv444dns/rawdyuvdns_col"

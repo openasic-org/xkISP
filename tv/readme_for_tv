@@ -1,0 +1,7 @@
+Please make to get the test vector;
+
+If you want to use your own image, please modify makefile
+./isp -i "your test image" -c "your configuration"
+Please notice that the configuration is fixed in each module level testbench
+
+TODO: modify the module level testbench to read configuration file
