@@ -9,7 +9,7 @@ The official on-line forum of xkISP project is: http://openasic.org/
 ##  File Structure
 
 ```
-openISP
+xkISP
 ├─fpga
 │      host.cpp
 │      top.cpp
@@ -54,9 +54,8 @@ openISP
 `setup_env.sh`  is used to designate the development tools. (Vitis HLS or Vivado)
 # Usage
 Clone this repo:
-> git clone xxx.git
-
-> cd xk-isp
+> git clone https://github.com/openasic-org/xkISP.git
+> cd xkISP
 
 ##  Environment setup
 Modify `setup_env.sh` to add the installed *vivado* or *vitis hls* path under the current system. Then complete the environment setup.
@@ -77,7 +76,6 @@ If you want to use your own image, please modify makefile
 ## module level verification
 For module level  verification, you can use the script `Makefile` in the  `tcl`. Of course, you can modify the `Makefile`as needed
 > cd tcl
-
 > make
 
 ## Top level integration verification
