@@ -82,7 +82,7 @@ int main(int argc, char** argv)
     //Checker
     for (x = 0; x < top_param.frameWidth*top_param.frameHeight; x++) {
     	int tmp = frameGolden[x] - frameOut[x];
-    	if(tmp > 4 || tmp < -4) {
+    	if(tmp != 0) {
             printf("\t\tFirst mismatch in pixel %d!\n", x);
             printf("\t\tGolden = %d, result = %d!\n", frameGolden[x], frameOut[x]);
             exit(0);

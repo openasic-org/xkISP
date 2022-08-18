@@ -102,6 +102,11 @@ void tpg(const top_register top_register,const tpg_register tpg_register, stream
             } else {
                 dst_t = src.read();
                 dst.write(dst_t);
+                #ifdef DEBUG
+                if((i == ROW_TEST) && (j == COL_TEST)) {
+                    printf("\t tpg_in = %x\n",dst_t.to_int());
+                }
+                #endif
             }
         }
     }
@@ -155,6 +160,13 @@ void dgain(const top_register top_register, const dgain_register dgain_register,
                 dst_tmp = (src_t-blc_w) * gain_w + GAIN_HALF_VALUE;
                 dst_val = (dst_tmp >> GAIN_BITS) + top_register.blc;
                 dst_t = dgain_clip(dst_val,0,4095);
+                #ifdef DEBUG
+                if((x == COL_TEST) && (y == ROW_TEST)) {
+                    printf("\t dgain_in = %x\n",src_t.to_int());
+                    printf("\t dgain_val = %x\n",dst_val.to_int());
+                    printf("\t dgain_out = %x\n",dst_t.to_int());
+                }
+                #endif
             } else {
                 dst_t = src_t;
             }
@@ -296,6 +308,9 @@ void lsc(const top_register topRegister, const lsc_register lscRegister, stream_
                     printf("\t block_width_count = %d\n", block_width_count.to_int());
                     printf("\t block_height_count = %d\n", block_height_count.to_int());
                     printf("\t lsc_out = %d\n", dst_t.to_int());
+                    printf("\t block_width_1 = %d", block_width_1.to_int());
+                    printf("\t block_height_1 = %d", block_height_1.to_int());
+                    printf("\t dst_value = %d", dst_value.to_int());
                 }
                 #endif
 
@@ -690,15 +705,15 @@ inline uint12 rawdns_clip(uint25 result)
         return (uint12)result;
 }
 
-
 uint8 Cal_weight(uint30 diff,rawdns_register& rawdns_reg,uint26 ksigma2)
 {
     const static uint8 weight_1[10] = {244,220,197,180,163,148,133,120,111,99};
-    #pragma HLS ARRAY_PARTITION variable=weight_1 complete dim=1
+#pragma HLS array_partition variable=weight_1 complete dim=1
     const static uint8 weight_2[18] = {85,70,57,47,39,32,26,21,18,15,12,10,8,7,6,3,1,0};
-    #pragma HLS ARRAY_PARTITION variable=weight_2 complete dim=1
+#pragma HLS array_partition variable=weight_2 complete dim=1
 
     uint8 weight;
+    uint40 weight_temp;
 
     if(ksigma2 == 0)
     {
@@ -707,66 +722,26 @@ uint8 Cal_weight(uint30 diff,rawdns_register& rawdns_reg,uint26 ksigma2)
     else if (diff > ksigma2)
     {
         diff = 5 * diff;
+        weight_temp = ((diff * rawdns_reg.invksigma2) >> 12) - 5;
+
         if(diff < 6 * ksigma2)
             weight = weight_2[0];
-        else if (diff < 7 * ksigma2)
-            weight = weight_2[1];
-        else if(diff < 8 * ksigma2)
-            weight = weight_2[2];
-        else if(diff < 9 * ksigma2)
-            weight = weight_2[3];
-        else if(diff < 10 * ksigma2)
-            weight = weight_2[4];
-        else if(diff < 11 * ksigma2)
-            weight = weight_2[5];
-        else if(diff < 12 * ksigma2)
-            weight = weight_2[6];
-        else if(diff < 13 * ksigma2)
-            weight = weight_2[7];
-        else if(diff < 14 * ksigma2)
-            weight = weight_2[8];
-        else if(diff < 15 * ksigma2)
-            weight = weight_2[9];
-        else if(diff < 16 * ksigma2)
-            weight = weight_2[10];
-        else if(diff < 17 * ksigma2)
-            weight = weight_2[11];
-        else if(diff < 18 * ksigma2)
-            weight = weight_2[12];
-        else if(diff < 19 * ksigma2)
-            weight = weight_2[13];
-        else if(diff < 20 * ksigma2)
-            weight = weight_2[14];
-        else if(diff < 21 * ksigma2)
-            weight = weight_2[15];
-        else if(diff < 22 * ksigma2)
-            weight = weight_2[16];
-        else
+        else if(diff >= 22 * ksigma2)
             weight = weight_2[17];
+        else
+            weight = weight_2[weight_temp];
     }
     else
     {
         diff = 10 * diff;
+        weight_temp = (diff * rawdns_reg.invksigma2) >> 12;
+
         if(diff < ksigma2)
             weight = weight_1[0];
-        else if(diff < 2 * ksigma2)
-            weight = weight_1[1];
-        else if(diff < 3 * ksigma2)
-            weight = weight_1[2];
-        else if(diff < 4 * ksigma2)
-            weight = weight_1[3];
-        else if(diff < 5 * ksigma2)
-            weight = weight_1[4];
-        else if(diff < 6 * ksigma2)
-            weight = weight_1[5];
-        else if(diff < 7 * ksigma2)
-            weight = weight_1[6];
-        else if(diff < 8 * ksigma2)
-            weight = weight_1[7];
-        else if(diff < 9 * ksigma2)
-            weight = weight_1[8];
-        else
+        else if(diff >= 9 * ksigma2)
             weight = weight_1[9];
+        else
+            weight = weight_1[weight_temp];
     }
     return weight;
 }
@@ -836,9 +811,9 @@ uint12 rawdns_process(uint12 rawdns_block[11][11],rawdns_register& rawdns_reg, u
 void rawdns(top_register top_reg, rawdns_register rawdns_reg, stream_u12& src, stream_u12& dst)
 {
     uint12 rawdns_lines[10][4096];
-    #pragma HLS array_partition variable=rawdns_lines block factor=10 dim=1
+#pragma HLS array_partition variable=rawdns_lines block factor=10 dim=1
     uint12 rawdns_block[11][11];
-    #pragma HLS array_partition variable=rawdns_block complete dim=0
+#pragma HLS array_partition variable=rawdns_block complete dim=0
 
     uint26 n;
     uint13 i = 0,j = 0,count = 0;
@@ -853,9 +828,10 @@ void rawdns(top_register top_reg, rawdns_register rawdns_reg, stream_u12& src, s
 
     pixel_loop:for(n=0;n<top_reg.frameHeight * top_reg.frameWidth;n++)
     {
-        #pragma HLS LOOP_TRIPCOUNT avg=2048
-        #pragma HLS PIPELINE
+#pragma HLS LOOP_TRIPCOUNT avg=2048
+#pragma HLS PIPELINE
         src_data = src.read();
+
         if(count == top_reg.frameWidth)
         {
             i++;
@@ -865,7 +841,7 @@ void rawdns(top_register top_reg, rawdns_register rawdns_reg, stream_u12& src, s
         count++;
         j = n - i * top_reg.frameWidth;
 
-        //rw and process
+     //rw and process
         if(rawdns_reg.eb)
         {
             //cache move
@@ -885,6 +861,7 @@ void rawdns(top_register top_reg, rawdns_register rawdns_reg, stream_u12& src, s
                 rawdns_lines[l][j] = rawdns_block[l+1][10];
             }
 
+
             if((i > 9) && (j > 9))
             {
                 dst_data = rawdns_process(rawdns_block, rawdns_reg,ksigma2,i,j);
@@ -895,23 +872,23 @@ void rawdns(top_register top_reg, rawdns_register rawdns_reg, stream_u12& src, s
             }
 
             #ifdef  DEBUG
-                if ((i == 10)&&(j == 10))
+                if ((i == ROW_TEST + 5)&&(j == COL_TEST + 5))
                 {
-                    printf("\t%x\t%x\n",i.to_int(),j.to_int());
-                    printf("\t%x\n",src_data.to_int());
-                    printf("\t%x\n",rawdns_block[5][5].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[0][0].to_int(), rawdns_block[0][1].to_int(), rawdns_block[0][2].to_int(), rawdns_block[0][3].to_int(), rawdns_block[0][4].to_int(), rawdns_block[0][5].to_int(), rawdns_block[0][6].to_int(), rawdns_block[0][7].to_int(), rawdns_block[0][8].to_int(), rawdns_block[0][9].to_int(), rawdns_block[0][10].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[1][0].to_int(), rawdns_block[1][1].to_int(), rawdns_block[1][2].to_int(), rawdns_block[1][3].to_int(), rawdns_block[1][4].to_int(), rawdns_block[1][5].to_int(), rawdns_block[1][6].to_int(), rawdns_block[1][7].to_int(), rawdns_block[1][8].to_int(), rawdns_block[1][9].to_int(), rawdns_block[1][10].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[2][0].to_int(), rawdns_block[2][1].to_int(), rawdns_block[2][2].to_int(), rawdns_block[2][3].to_int(), rawdns_block[2][4].to_int(), rawdns_block[2][5].to_int(), rawdns_block[2][6].to_int(), rawdns_block[2][7].to_int(), rawdns_block[2][8].to_int(), rawdns_block[2][9].to_int(), rawdns_block[2][10].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[3][0].to_int(), rawdns_block[3][1].to_int(), rawdns_block[3][2].to_int(), rawdns_block[3][3].to_int(), rawdns_block[3][4].to_int(), rawdns_block[3][5].to_int(), rawdns_block[3][6].to_int(), rawdns_block[3][7].to_int(), rawdns_block[3][8].to_int(), rawdns_block[3][9].to_int(), rawdns_block[3][10].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[4][0].to_int(), rawdns_block[4][1].to_int(), rawdns_block[4][2].to_int(), rawdns_block[4][3].to_int(), rawdns_block[4][4].to_int(), rawdns_block[4][5].to_int(), rawdns_block[4][6].to_int(), rawdns_block[4][7].to_int(), rawdns_block[4][8].to_int(), rawdns_block[4][9].to_int(), rawdns_block[4][10].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[5][0].to_int(), rawdns_block[5][1].to_int(), rawdns_block[5][2].to_int(), rawdns_block[5][3].to_int(), rawdns_block[5][4].to_int(), rawdns_block[5][5].to_int(), rawdns_block[5][6].to_int(), rawdns_block[5][7].to_int(), rawdns_block[5][8].to_int(), rawdns_block[5][9].to_int(), rawdns_block[5][10].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[6][0].to_int(), rawdns_block[6][1].to_int(), rawdns_block[6][2].to_int(), rawdns_block[6][3].to_int(), rawdns_block[6][4].to_int(), rawdns_block[6][5].to_int(), rawdns_block[6][6].to_int(), rawdns_block[6][7].to_int(), rawdns_block[6][8].to_int(), rawdns_block[6][9].to_int(), rawdns_block[6][10].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[7][0].to_int(), rawdns_block[7][1].to_int(), rawdns_block[7][2].to_int(), rawdns_block[7][3].to_int(), rawdns_block[7][4].to_int(), rawdns_block[7][5].to_int(), rawdns_block[7][6].to_int(), rawdns_block[7][7].to_int(), rawdns_block[7][8].to_int(), rawdns_block[7][9].to_int(), rawdns_block[7][10].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[8][0].to_int(), rawdns_block[8][1].to_int(), rawdns_block[8][2].to_int(), rawdns_block[8][3].to_int(), rawdns_block[8][4].to_int(), rawdns_block[8][5].to_int(), rawdns_block[8][6].to_int(), rawdns_block[8][7].to_int(), rawdns_block[8][8].to_int(), rawdns_block[8][9].to_int(), rawdns_block[8][10].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[9][0].to_int(), rawdns_block[9][1].to_int(), rawdns_block[9][2].to_int(), rawdns_block[9][3].to_int(), rawdns_block[9][4].to_int(), rawdns_block[9][5].to_int(), rawdns_block[9][6].to_int(), rawdns_block[9][7].to_int(), rawdns_block[9][8].to_int(), rawdns_block[9][9].to_int(), rawdns_block[9][10].to_int());
-                    printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n", rawdns_block[10][0].to_int(), rawdns_block[10][1].to_int(), rawdns_block[10][2].to_int(), rawdns_block[10][3].to_int(), rawdns_block[10][4].to_int(), rawdns_block[10][5].to_int(), rawdns_block[10][6].to_int(), rawdns_block[10][7].to_int(), rawdns_block[10][8].to_int(), rawdns_block[10][9].to_int(), rawdns_block[10][10].to_int());
-                    printf("\t%x\n",dst_data.to_int());
+                    printf("\t%d\t%d\n",i.to_int(),j.to_int());
+                    printf("\t%d\n",src_data.to_int());
+                    printf("\t%d\n",rawdns_block[5][5].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[0][0].to_int(), rawdns_block[0][1].to_int(), rawdns_block[0][2].to_int(), rawdns_block[0][3].to_int(), rawdns_block[0][4].to_int(), rawdns_block[0][5].to_int(), rawdns_block[0][6].to_int(), rawdns_block[0][7].to_int(), rawdns_block[0][8].to_int(), rawdns_block[0][9].to_int(), rawdns_block[0][10].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[1][0].to_int(), rawdns_block[1][1].to_int(), rawdns_block[1][2].to_int(), rawdns_block[1][3].to_int(), rawdns_block[1][4].to_int(), rawdns_block[1][5].to_int(), rawdns_block[1][6].to_int(), rawdns_block[1][7].to_int(), rawdns_block[1][8].to_int(), rawdns_block[1][9].to_int(), rawdns_block[1][10].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[2][0].to_int(), rawdns_block[2][1].to_int(), rawdns_block[2][2].to_int(), rawdns_block[2][3].to_int(), rawdns_block[2][4].to_int(), rawdns_block[2][5].to_int(), rawdns_block[2][6].to_int(), rawdns_block[2][7].to_int(), rawdns_block[2][8].to_int(), rawdns_block[2][9].to_int(), rawdns_block[2][10].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[3][0].to_int(), rawdns_block[3][1].to_int(), rawdns_block[3][2].to_int(), rawdns_block[3][3].to_int(), rawdns_block[3][4].to_int(), rawdns_block[3][5].to_int(), rawdns_block[3][6].to_int(), rawdns_block[3][7].to_int(), rawdns_block[3][8].to_int(), rawdns_block[3][9].to_int(), rawdns_block[3][10].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[4][0].to_int(), rawdns_block[4][1].to_int(), rawdns_block[4][2].to_int(), rawdns_block[4][3].to_int(), rawdns_block[4][4].to_int(), rawdns_block[4][5].to_int(), rawdns_block[4][6].to_int(), rawdns_block[4][7].to_int(), rawdns_block[4][8].to_int(), rawdns_block[4][9].to_int(), rawdns_block[4][10].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[5][0].to_int(), rawdns_block[5][1].to_int(), rawdns_block[5][2].to_int(), rawdns_block[5][3].to_int(), rawdns_block[5][4].to_int(), rawdns_block[5][5].to_int(), rawdns_block[5][6].to_int(), rawdns_block[5][7].to_int(), rawdns_block[5][8].to_int(), rawdns_block[5][9].to_int(), rawdns_block[5][10].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[6][0].to_int(), rawdns_block[6][1].to_int(), rawdns_block[6][2].to_int(), rawdns_block[6][3].to_int(), rawdns_block[6][4].to_int(), rawdns_block[6][5].to_int(), rawdns_block[6][6].to_int(), rawdns_block[6][7].to_int(), rawdns_block[6][8].to_int(), rawdns_block[6][9].to_int(), rawdns_block[6][10].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[7][0].to_int(), rawdns_block[7][1].to_int(), rawdns_block[7][2].to_int(), rawdns_block[7][3].to_int(), rawdns_block[7][4].to_int(), rawdns_block[7][5].to_int(), rawdns_block[7][6].to_int(), rawdns_block[7][7].to_int(), rawdns_block[7][8].to_int(), rawdns_block[7][9].to_int(), rawdns_block[7][10].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[8][0].to_int(), rawdns_block[8][1].to_int(), rawdns_block[8][2].to_int(), rawdns_block[8][3].to_int(), rawdns_block[8][4].to_int(), rawdns_block[8][5].to_int(), rawdns_block[8][6].to_int(), rawdns_block[8][7].to_int(), rawdns_block[8][8].to_int(), rawdns_block[8][9].to_int(), rawdns_block[8][10].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[9][0].to_int(), rawdns_block[9][1].to_int(), rawdns_block[9][2].to_int(), rawdns_block[9][3].to_int(), rawdns_block[9][4].to_int(), rawdns_block[9][5].to_int(), rawdns_block[9][6].to_int(), rawdns_block[9][7].to_int(), rawdns_block[9][8].to_int(), rawdns_block[9][9].to_int(), rawdns_block[9][10].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", rawdns_block[10][0].to_int(), rawdns_block[10][1].to_int(), rawdns_block[10][2].to_int(), rawdns_block[10][3].to_int(), rawdns_block[10][4].to_int(), rawdns_block[10][5].to_int(), rawdns_block[10][6].to_int(), rawdns_block[10][7].to_int(), rawdns_block[10][8].to_int(), rawdns_block[10][9].to_int(), rawdns_block[10][10].to_int());
+                    printf("\t%d\n",dst_data.to_int());
                     printf("\n\n\n");
                 }
             #endif
@@ -932,24 +909,26 @@ void rawdns(top_register top_reg, rawdns_register rawdns_reg, stream_u12& src, s
     {
         padding_loop1:for(k = 0; k < 5 ;k++)
         {
-            #pragma HLS unroll
+#pragma HLS UNROLL
+
             dst_data = rawdns_lines[4][top_reg.frameWidth - 5 + k];
             dst.write(dst_data);
         }
 
         padding_loop2:for(k = 0; k < 5 ;k++)
         {
-            #pragma HLS unroll factor=5
+#pragma HLS UNROLL factor=5
+
             loop2_inner_loop:for(i = 0;i < top_reg.frameWidth;i++)
             {
-                #pragma HLS PIPELINE
-                dst_data = rawdns_lines[k+5][i];
+#pragma HLS PIPELINE
+
+                dst_data = rawdns_lines[k + 5][i];
                 dst.write(dst_data);
             }
         }
     }
 }
-
 
 //awb module
 void awb(top_register top_register, awb_register awb_register, stream_u12 &src, stream_u16 &awb_gain, stream_u12 &dst) {
@@ -990,6 +969,11 @@ void awb(top_register top_register, awb_register awb_register, stream_u12 &src, 
                 }
             }
                 dst.write(src_t);
+                #ifdef DEBUG
+                if((x == COL_TEST) && (y == ROW_TEST)) {
+                    printf("\t lsc_in = %d\n", src_t.to_int());
+                }
+                #endif
             }
     }
 
@@ -1044,6 +1028,12 @@ void wbc(const top_register top_register, const wbc_register wbc_register, strea
 
                 dst_val = (((src_t - top_register.blc) * gain_w + 2048) >> 12) + top_register.blc;
                 dst_t = wbc_clip(dst_val,0,4095);
+                #ifdef DEBUG
+                if((x == COL_TEST) && (y == ROW_TEST)) {
+                    printf("\t wbc_in = %x\n",src_t.to_int());
+                    printf("\t wbc_out = %x\n",dst_t.to_int());
+                }
+                #endif
             } else {
                 dst_t = src_t;
             }
@@ -1271,6 +1261,19 @@ void greenbalance2(top_register top_reg, gb_register gb_reg, hls::stream<uint12>
             pixel_out = pixel_in;
             dst.write(pixel_out);
         }
+               #ifdef DEBUG
+                    if((row == ROW_TEST + 3) && (col == COL_TEST + 3)) {
+                        printf("\t%x\t%x\n",row.to_int(),col.to_int());
+                        printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[0][0].to_int(),gb_block[0][1].to_int(),gb_block[0][2].to_int(),gb_block[0][3].to_int(),gb_block[0][4].to_int(),gb_block[0][5].to_int(),gb_block[0][6].to_int());
+                        printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[1][0].to_int(),gb_block[1][1].to_int(),gb_block[1][2].to_int(),gb_block[1][3].to_int(),gb_block[1][4].to_int(),gb_block[1][5].to_int(),gb_block[1][6].to_int());
+                        printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[2][0].to_int(),gb_block[2][1].to_int(),gb_block[2][2].to_int(),gb_block[2][3].to_int(),gb_block[2][4].to_int(),gb_block[2][5].to_int(),gb_block[3][6].to_int());
+                        printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[3][0].to_int(),gb_block[3][1].to_int(),gb_block[3][2].to_int(),gb_block[3][3].to_int(),gb_block[3][4].to_int(),gb_block[3][5].to_int(),gb_block[3][6].to_int());
+                        printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[4][0].to_int(),gb_block[4][1].to_int(),gb_block[4][2].to_int(),gb_block[4][3].to_int(),gb_block[4][4].to_int(),gb_block[4][5].to_int(),gb_block[4][6].to_int());
+                        printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[5][0].to_int(),gb_block[5][1].to_int(),gb_block[5][2].to_int(),gb_block[5][3].to_int(),gb_block[5][4].to_int(),gb_block[5][5].to_int(),gb_block[5][6].to_int());
+                        printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[6][0].to_int(),gb_block[6][1].to_int(),gb_block[6][2].to_int(),gb_block[6][3].to_int(),gb_block[6][4].to_int(),gb_block[6][5].to_int(),gb_block[6][6].to_int());
+                        printf("\t%x\t%x\n",pixel_in.to_int(), pixel_out.to_int());
+                    }
+                #endif
     }
 }
 
@@ -1399,7 +1402,7 @@ void demosaic(const top_register top_register, const demosaic_register demosaic_
                     dst_t(23,12) = outPixel.g;
                     dst_t(11,0) = outPixel.b;
                     #ifdef DEBUG
-                    if((col == COL_TEST) && (row == ROW_TEST)) {
+                    if((col == COL_TEST + 2) && (row == ROW_TEST + 2)) {
                         printf("%8x\n",dst_t.to_long());
                         printf("\t%x\t%x\n",row.to_int(),col.to_int());
                         printf("\tpattern = %d\n",bayerPattern.to_int());
@@ -1439,7 +1442,7 @@ inline uint12 ee_clip(int15 ee_result)
       return (uint12)ee_result;
 }
 
-inline uint12 ee_clip(int22 ee_result)
+inline uint12 ee_clip(int25 ee_result)
 {
    if(ee_result > 4095)
       return 4095;
@@ -1451,7 +1454,7 @@ inline uint12 ee_clip(int22 ee_result)
 
 uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
 {
-    bool eb = ee_top.eb;
+    uint1  eb = ee_top.eb;
     uint4  coeff = ee_top.coeff;
     const static uint5 guass_55[5][5] = {1,2,4,2,1,2,4,8,4,2,4,8,16,8,4,2,4,8,4,2,1,2,4,2,1};
     #pragma HLS ARRAY_PARTITION variable=guass_55 complete dim=1
@@ -1460,21 +1463,18 @@ uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
     #pragma HLS ARRAY_PARTITION variable=rblock complete dim=1
     #pragma HLS ARRAY_PARTITION variable=bblock complete dim=1
     #pragma HLS ARRAY_PARTITION variable=gblock complete dim=1
-    int14  feq_l_r[4] = {0},feq_l_g[4] = {0},feq_l_b[4] = {0};
-    #pragma HLS ARRAY_PARTITION variable=feq_l_r complete dim=1
-    #pragma HLS ARRAY_PARTITION variable=feq_l_b complete dim=1
-    #pragma HLS ARRAY_PARTITION variable=feq_l_g complete dim=1
-    int14  feq_h_r[4] = {0},feq_h_g[4] = {0},feq_h_b[4] = {0};
-    #pragma HLS ARRAY_PARTITION variable=feq_h_r complete dim=1
-    #pragma HLS ARRAY_PARTITION variable=feq_h_b complete dim=1
-    #pragma HLS ARRAY_PARTITION variable=feq_h_g complete dim=1
-    int14  result_v_r[5] = {0},result_v_g[5]={0},result_v_b[5]={0};
-    #pragma HLS ARRAY_PARTITION variable=result_v_b complete dim=1
-    #pragma HLS ARRAY_PARTITION variable=result_v_g complete dim=1
-    #pragma HLS ARRAY_PARTITION variable=result_v_r complete dim=1
+    int14  feq_l[4] = {0};
+    #pragma HLS ARRAY_PARTITION variable=feq_l complete dim=1
+    int14  feq_h[4] = {0};
+    #pragma HLS ARRAY_PARTITION variable=feq_h complete dim=1
+    int14  result_v[5] = {0};
+    #pragma HLS ARRAY_PARTITION variable=result_v complete dim=1
+
     int15  low_feq_r = 0,low_feq_g = 0,low_feq_b = 0;
+    int15  high_feq_r = 0,high_feq_g = 0,high_feq_b = 0;
     int15  temp_r = 0,temp_g = 0,temp_b = 0;
-    int22  r_result = 0,g_result = 0, b_result = 0;
+    int24  r_middle = 0,g_middle = 0,b_middle = 0;
+    int25  r_result = 0,g_result = 0, b_result = 0;
 
     uint3 k,l;
     uint36 result;
@@ -1494,140 +1494,173 @@ uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
         }
     }
 
-    sharpen_threhold_r = sharpen_threhold_r >> 12;
-    sharpen_threhold_g = sharpen_threhold_g >> 12;
-    sharpen_threhold_b = sharpen_threhold_b >> 12;
+    sharpen_threhold_r = sharpen_threhold_r >> 10;
+    sharpen_threhold_g = sharpen_threhold_g >> 10;
+    sharpen_threhold_b = sharpen_threhold_b >> 10;
 
     center.r = ee_block[2][2] >> 24;
     center.g = gblock[2][2];
     center.b = ee_block[2][2] & 0xfff;
 
-    //process
+    //process r
     for(k = 0; k < 5; k++) {
         for (l = 0; l < 4; l++) {
 
-            feq_l_r[l] = rblock[l][k]/2 + rblock[l + 1][k]/2;
-            feq_h_r[l] = rblock[l][k]/2 - rblock[l + 1][k]/2;
+            feq_l[l] = rblock[l][k]/2 + rblock[l + 1][k]/2;
+            feq_h[l] = rblock[l][k]/2 - rblock[l + 1][k]/2;
 
-            feq_l_g[l] = gblock[l][k]/2 + gblock[l + 1][k]/2;
-            feq_h_g[l] = gblock[l][k]/2 - gblock[l + 1][k]/2;
-
-            feq_l_b[l] = bblock[l][k]/2 + bblock[l + 1][k]/2;
-            feq_h_b[l] = bblock[l][k]/2 - bblock[l + 1][k]/2;
-
-            if(feq_h_r[l] > sharpen_threhold_r)
+            if(feq_h[l] > sharpen_threhold_r)
             {
-                feq_h_r[l] -= sharpen_threhold_r;
+                feq_h[l] -= sharpen_threhold_r;
             }
-            else if(feq_h_r[l] < - sharpen_threhold_r)
+            else if(feq_h[l] < - sharpen_threhold_r)
             {
-                feq_h_r[l] += sharpen_threhold_r;
+                feq_h[l] += sharpen_threhold_r;
             }
             else
             {
-                feq_h_r[l] = feq_h_r[l];
-            }
-
-            if(feq_h_g[l] > sharpen_threhold_g)
-            {
-                feq_h_g[l] -= sharpen_threhold_g;
-            }
-            else if(feq_h_g[l] < - sharpen_threhold_g)
-            {
-                feq_h_g[l] += sharpen_threhold_g;
-            }
-            else
-            {
-                feq_h_g[l] = feq_h_g[l];
-            }
-
-            if(feq_h_b[l] > sharpen_threhold_b)
-            {
-                feq_h_b[l] -= sharpen_threhold_b;
-            }
-            else if(feq_h_b[l] < - sharpen_threhold_b)
-            {
-                feq_h_b[l] += sharpen_threhold_b;
-            }
-            else
-            {
-                feq_h_b[l] = feq_h_b[l];
+                feq_h[l] = 0;
             }
         }
 
-        temp_r = feq_l_r[1]/2 + feq_h_r[1]/2 + feq_l_r[2]/2 + feq_h_r[2]/2;
-        temp_g = feq_l_g[1]/2 + feq_h_g[1]/2 + feq_l_g[2]/2 + feq_h_g[2]/2;
-        temp_b = feq_l_b[1]/2 + feq_h_b[1]/2 + feq_l_b[2]/2 + feq_h_b[2]/2;
+        temp_r = feq_l[1]/2 + feq_h[1]/2 + feq_l[2]/2 + feq_h[2]/2;
+        result_v[k] = ee_clip(temp_r);
 
-        result_v_r[k] = ee_clip(temp_r);
-        result_v_g[k] = ee_clip(temp_g);
-        result_v_b[k] = ee_clip(temp_b);
     }
 
     for(k = 0; k < 4; k++) {
-        feq_l_r[k] = result_v_r[k]/2 + result_v_r[k+1]/2;
-        feq_h_r[k] = result_v_r[k]/2 - result_v_r[k+1]/2;
-        feq_l_g[k] = result_v_g[k]/2 + result_v_g[k+1]/2;
-        feq_h_g[k] = result_v_g[k]/2 - result_v_g[k+1]/2;
-        feq_l_b[k] = result_v_b[k]/2 + result_v_b[k+1]/2;
-        feq_h_b[k] = result_v_b[k]/2 - result_v_b[k+1]/2;
 
-        if(feq_h_r[k] > sharpen_threhold_r)
+        feq_l[k] = result_v[k]/2 + result_v[k+1]/2;
+        feq_h[k] = result_v[k]/2 - result_v[k+1]/2;
+
+        if(feq_h[k] > sharpen_threhold_r)
         {
-            feq_h_r[k] -= sharpen_threhold_r;
+            feq_h[k] -= sharpen_threhold_r;
         }
-        else if(feq_h_r[k] < -sharpen_threhold_r)
+        else if(feq_h[k] < -sharpen_threhold_r)
         {
-            feq_h_r[k] += sharpen_threhold_r;
+            feq_h[k] += sharpen_threhold_r;
         }
         else
         {
-            feq_h_r[k] = feq_h_r[k];
-        }
-
-        if(feq_h_g[k] > sharpen_threhold_g)
-        {
-            feq_h_g[k] -= sharpen_threhold_g;
-        }
-        else if(feq_h_g[k] < -sharpen_threhold_g)
-        {
-            feq_h_g[k] += sharpen_threhold_g;
-        }
-        else
-        {
-            feq_h_g[k] = feq_h_g[k];
-        }
-
-        if(feq_h_b[k] > sharpen_threhold_b)
-        {
-            feq_h_b[k] -= sharpen_threhold_b;
-        }
-        else if(feq_h_b[k] < -sharpen_threhold_b)
-        {
-            feq_h_b[k] += sharpen_threhold_b;
-        }
-        else
-        {
-            feq_h_b[k] = feq_h_b[k];
+            feq_h[k] = 0;
         }
     }
 
-    temp_r = feq_l_r[1]/2 + feq_h_r[1]/2 + feq_l_r[2]/2 + feq_h_r[2]/2;
-    temp_g = feq_l_g[1]/2 + feq_h_g[1]/2 + feq_l_g[2]/2 + feq_h_g[2]/2;
-    temp_b = feq_l_b[1]/2 + feq_h_b[1]/2 + feq_l_b[2]/2 + feq_h_b[2]/2;
+    temp_r = feq_l[1]/2 + feq_h[1]/2 + feq_l[2]/2 + feq_h[2]/2;
+
+
+    //process g
+    for(k = 0; k < 5; k++) {
+        for (l = 0; l < 4; l++) {
+
+            feq_l[l] = gblock[l][k]/2 + gblock[l + 1][k]/2;
+            feq_h[l] = gblock[l][k]/2 - gblock[l + 1][k]/2;
+
+            if(feq_h[l] > sharpen_threhold_g)
+            {
+                feq_h[l] -= sharpen_threhold_g;
+            }
+            else if(feq_h[l] < - sharpen_threhold_g)
+            {
+                feq_h[l] += sharpen_threhold_g;
+            }
+            else
+            {
+                feq_h[l] = 0;
+            }
+        }
+
+        temp_g = feq_l[1]/2 + feq_h[1]/2 + feq_l[2]/2 + feq_h[2]/2;
+        result_v[k] = ee_clip(temp_g);
+
+    }
+
+    for(k = 0; k < 4; k++) {
+
+        feq_l[k] = result_v[k]/2 + result_v[k+1]/2;
+        feq_h[k] = result_v[k]/2 - result_v[k+1]/2;
+
+        if(feq_h[k] > sharpen_threhold_g)
+        {
+            feq_h[k] -= sharpen_threhold_g;
+        }
+        else if(feq_h[k] < -sharpen_threhold_g)
+        {
+            feq_h[k] += sharpen_threhold_g;
+        }
+        else
+        {
+            feq_h[k] = 0;
+        }
+    }
+
+    temp_g = feq_l[1]/2 + feq_h[1]/2 + feq_l[2]/2 + feq_h[2]/2;
+
+
+
+    //process b
+    for(k = 0; k < 5; k++) {
+        for (l = 0; l < 4; l++) {
+
+            feq_l[l] = bblock[l][k]/2 + bblock[l + 1][k]/2;
+            feq_h[l] = bblock[l][k]/2 - bblock[l + 1][k]/2;
+
+            if(feq_h[l] > sharpen_threhold_b)
+            {
+                feq_h[l] -= sharpen_threhold_b;
+            }
+            else if(feq_h[l] < - sharpen_threhold_b)
+            {
+                feq_h[l] += sharpen_threhold_b;
+            }
+            else
+            {
+                feq_h[l] = 0;
+            }
+        }
+
+        temp_b = feq_l[1]/2 + feq_h[1]/2 + feq_l[2]/2 + feq_h[2]/2;
+        result_v[k] = ee_clip(temp_b);
+
+    }
+
+    for(k = 0; k < 4; k++) {
+
+        feq_l[k] = result_v[k]/2 + result_v[k+1]/2;
+        feq_h[k] = result_v[k]/2 - result_v[k+1]/2;
+
+        if(feq_h[k] > sharpen_threhold_b)
+        {
+            feq_h[k] -= sharpen_threhold_b;
+        }
+        else if(feq_h[k] < -sharpen_threhold_b)
+        {
+            feq_h[k] += sharpen_threhold_b;
+        }
+        else
+        {
+            feq_h[k] = 0;
+        }
+    }
+
+    temp_b = feq_l[1]/2 + feq_h[1]/2 + feq_l[2]/2 + feq_h[2]/2;
 
     low_feq_r =  ee_clip(temp_r);
     low_feq_g =  ee_clip(temp_g);
     low_feq_b =  ee_clip(temp_b);
-
-    r_result = (((int15)(rblock[2][2] >> 6) - (low_feq_r >> 6)) * ee_top.coeff) + (int15)center.r;
-    g_result = (((int15)(gblock[2][2] >> 6) - (low_feq_g >> 6)) * ee_top.coeff) + (int15)center.g;
-    b_result = (((int15)(bblock[2][2] >> 6) - (low_feq_b >> 6)) * ee_top.coeff) + (int15)center.b;
-
-    //center.r = ee_clip(r_result);
+    high_feq_r = (int15)rblock[2][2] - low_feq_r;
+    high_feq_g = (int15)gblock[2][2] - low_feq_g;
+    high_feq_b = (int15)bblock[2][2] - low_feq_b;
+    r_middle = high_feq_r * ee_top.coeff + 8;
+    g_middle = high_feq_g * ee_top.coeff + 8;
+    b_middle = high_feq_b * ee_top.coeff + 8;
+    r_result = (r_middle >> 4) + low_feq_r;
+    g_result = (g_middle >> 4) + low_feq_g;
+    b_result = (b_middle >> 4) + low_feq_b;
+    center.r = ee_clip(r_result);
     center.g = ee_clip(g_result);
-    //center.b = ee_clip(b_result);
-
+    center.b = ee_clip(b_result);
     result = (uint36)(center.r) << 24 | (uint36)(center.g) << 12 |(uint36)(center.b);
     return result;
 }
@@ -1787,9 +1820,10 @@ void cmc(const top_register top_register, const cmc_register cmc_register, strea
                     #pragma HLS unroll
                     temp1 = red*gain[k*4] + green*gain[k*4+1] + blue*gain[k*4+2] + CMC_HALF_VALUE;
                     temp2 = (temp1 >> CMC_SHIFT_DEEP) + temph + tempblc + gain[k*4+3];
+
                     #ifdef DEBUG
                     if((y == ROW_TEST) && (x == COL_TEST)){
-                        printf("\t%x\t%x\t%x\n",temph.to_int(),tempblc.to_int(),temp.to_int());
+                        printf("\t%x\t%x\n",temph.to_int(),tempblc.to_int());
                         printf("\t%x\t%x\t%x\n",gain[k*3].to_int(),gain[k*3+1].to_int(),gain[k*3+2].to_int());
                     }
                     #endif
@@ -1806,13 +1840,15 @@ void cmc(const top_register top_register, const cmc_register cmc_register, strea
                     //}
                 }
             }
+
             #ifdef DEBUG
             if((y == ROW_TEST) && (x == COL_TEST)){
-                printf("\t%x\t%x\t%x\n",temph.to_int(),tempblc.to_int(),temp.to_int());
+                printf("\t%x\t%x\n",temph.to_int(),tempblc.to_int());
                 printf("\t%x\t%x\t%x\n",red.to_int(),green.to_int(),blue.to_int());
                 printf("\t%x\t%x\t%x\n",dst_w[0].to_int(),dst_w[1].to_int(),dst_w[2].to_int());
             }
             #endif
+
             dst_t(41,28) = dst_w[0];
             dst_t(27,14) = dst_w[1];
             dst_t(13,0) = dst_w[2];
@@ -1977,6 +2013,12 @@ void csc(const top_register top_register, const csc_register csc_register, strea
             dst_t(29,20) = dst_w[0];
             dst_t(19,10) = dst_w[1];
             dst_t(9,0) = dst_w[2];
+           #ifdef DEBUG
+           if((y == ROW_TEST) && (x == COL_TEST)){
+               printf("\tcsc_in = %x\t%x\t%x\n",src_w[0].to_int(),src_w[1].to_int(),src_w[2].to_int());
+               printf("\tcsc_out = %x\t%x\t%x\n",dst_w[0].to_int(),dst_w[1].to_int(),dst_w[2].to_int());
+           }
+           #endif
             dst.write(dst_t);
         }
     }
@@ -2298,7 +2340,7 @@ void yuv444dns(top_register top_register, yuvdns_register yuvdns_reg, stream_u10
     addon_loop_1: for (uint3 i = 0; i < 4; i++){
         #pragma HLS PIPELINE
         y_dst_t = yWindow[4][i+5];
-        y_dst_t = uWindow[4][i+5];
+        u_dst_t = uWindow[4][i+5];
         v_dst_t = vWindow[4][i+5];
         dst_y.write(y_dst_t);
         dst_u.write(u_dst_t);
@@ -2624,6 +2666,7 @@ inline void config_reg(
     rawdns_reg.eb = cly_small.range(40, 40);
     rawdns_reg.sigma = cly_small.range(46,41);
     rawdns_reg.Filterpara = cly_small.range(53,47);
+    rawdns_reg.invksigma2 = cly_large.range(56,45);
 
     //lsc register
     lsc_reg.eb = cly_large.range(0,0);
@@ -3011,3 +3054,5 @@ extern "C"{
                 coeff);
     }
 }
+
+

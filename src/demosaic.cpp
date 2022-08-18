@@ -73,7 +73,7 @@ void demosaic(top_register top_reg, demosaic_register demosaic_reg, Stream_t& sr
     int jiayou = 0;
     uint3 i;
 
-    rawData_t lineBuf[4][4096];
+    rawData_t lineBuf[4][8192];
     pixel_t outPixel;
     outer_loop:for(uint13 row = 0; row < top_reg.frameHeight; row++){
         inner_loop:for(uint13 col = 0; col < top_reg.frameWidth; col++){
@@ -108,7 +108,7 @@ void demosaic(top_register top_reg, demosaic_register demosaic_reg, Stream_t& sr
                     dst_t.set_slc(0,outPixel.b);
                 #endif
                 #ifdef DEBUG
-                    if((row == ROW_TEST) && (col == COL_TEST)) {
+                    if((row == ROW_TEST + 2) && (col == COL_TEST + 2)) {
                         printf("\t%x\t%x\n",row.to_int(),col.to_int());
                         printf("\tpattern = %d\n",bayerPattern.to_int());
                         printf("\t%x\t%x\t%x\t%x\t%x\n",rawWindow[0][0].to_int(),rawWindow[0][1].to_int(),rawWindow[0][2].to_int(),rawWindow[0][3].to_int(),rawWindow[0][4].to_int());

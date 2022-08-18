@@ -21,10 +21,10 @@ int main(int argc, char** argv)
 
     topParam.frameWidth = 640;
     topParam.frameHeight = 480;
-    dgain_param.m_nR= 0x01000;
-    dgain_param.m_nGr = 0x01000;
-    dgain_param.m_nGb = 0x01000;
-    dgain_param.m_nB = 0x01000;
+    dgain_param.m_nR= 0x04000;
+    dgain_param.m_nGr = 0x04000;
+    dgain_param.m_nGb = 0x04000;
+    dgain_param.m_nB = 0x04000;
 
     //In
     FILE *fp_r1 = fopen(Dgain_SRC1, "r");

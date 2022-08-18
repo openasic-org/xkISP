@@ -168,11 +168,11 @@ uint12 ColumnStatistic(uint12 gb_block[7][7], bool IfRBpixel, gb_register& gb_re
 
 
 
-void greenbalance2(top_register top_reg, gb_register gb_reg, hls::stream<uint12>& src, hls::stream<uint12>& dst)
+void greenbalance2(top_register top_reg, gb_register gb_reg, stream_u12& src, stream_u12& dst)
 {
     uint12 pixel_in;
     uint12 pixel_out;
-    uint12 gb_lines[6][4096];
+    uint12 gb_lines[6][8192];
 
     uint12 temp[5];
     uint12 gb_block[7][7];
@@ -191,7 +191,6 @@ void greenbalance2(top_register top_reg, gb_register gb_reg, hls::stream<uint12>
         if (gb_reg.eb)
         {
             out_window_loop:for (k = 0; k < 7; k++) {
-
                 in_window_loop:for (l = 0; l < 6; l++) {
                     gb_block[k][l] = gb_block[k][l + 1];
                 }
@@ -227,6 +226,21 @@ void greenbalance2(top_register top_reg, gb_register gb_reg, hls::stream<uint12>
             pixel_out = pixel_in;
             dst.write(pixel_out);
         }
+	
+            #ifdef DEBUG
+            if((row == ROW_TEST + 3) && (col == COL_TEST + 3)) {
+                printf("\t%x\t%x\n",row.to_int(),col.to_int());
+                printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[0][0].to_int(),gb_block[0][1].to_int(),gb_block[0][2].to_int(),gb_block[0][3].to_int(),gb_block[0][4].to_int(),gb_block[0][5].to_int(),gb_block[0][6].to_int());
+                printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[1][0].to_int(),gb_block[1][1].to_int(),gb_block[1][2].to_int(),gb_block[1][3].to_int(),gb_block[1][4].to_int(),gb_block[1][5].to_int(),gb_block[1][6].to_int());
+                printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[2][0].to_int(),gb_block[2][1].to_int(),gb_block[2][2].to_int(),gb_block[2][3].to_int(),gb_block[2][4].to_int(),gb_block[2][5].to_int(),gb_block[3][6].to_int());
+                printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[3][0].to_int(),gb_block[3][1].to_int(),gb_block[3][2].to_int(),gb_block[3][3].to_int(),gb_block[3][4].to_int(),gb_block[3][5].to_int(),gb_block[3][6].to_int());
+                printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[4][0].to_int(),gb_block[4][1].to_int(),gb_block[4][2].to_int(),gb_block[4][3].to_int(),gb_block[4][4].to_int(),gb_block[4][5].to_int(),gb_block[4][6].to_int());
+                printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[5][0].to_int(),gb_block[5][1].to_int(),gb_block[5][2].to_int(),gb_block[5][3].to_int(),gb_block[5][4].to_int(),gb_block[5][5].to_int(),gb_block[5][6].to_int());
+                printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[6][0].to_int(),gb_block[6][1].to_int(),gb_block[6][2].to_int(),gb_block[6][3].to_int(),gb_block[6][4].to_int(),gb_block[6][5].to_int(),gb_block[6][6].to_int());
+                printf("\t%x\t%x\n",pixel_in.to_int(), pixel_out.to_int());
+            }
+                #endif
+		
     }
 }
 

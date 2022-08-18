@@ -18,6 +18,6 @@ typedef struct{
 uint13 BilinearInterpolation(uint13* LeftTopGain, uint13* LeftDownGain,uint13* RightTopGain, uint13* RightDownGain,
 		uint9 BlockWidthCount, uint9 BlockHeightCount, uint14 blockWidth_1, uint10 blockHeight_1);
 
-void lsc(top_register topRegister, lsc_register lscRegister, stream_u12 &src, stream_u12 &dst);
+void lsc(top_register topRegister, lsc_register &lscRegister, stream_u12 &src, stream_u12 &dst);
 
 #endif

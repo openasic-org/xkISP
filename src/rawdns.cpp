@@ -3,9 +3,7 @@
 uint8 Cal_weight(uint30 diff,rawdns_register& rawdns_reg,uint26 ksigma2)
 {
     const static uint8 weight_1[10] = {244,220,197,180,163,148,133,120,111,99};
-#pragma HLS ARRAY_PARTITION variable=weight_1 complete dim=1
     const static uint8 weight_2[18] = {85,70,57,47,39,32,26,21,18,15,12,10,8,7,6,3,1,0};
-#pragma HLS ARRAY_PARTITION variable=weight_2 complete dim=1
 
     uint8 weight;
     uint40 weight_temp;
@@ -17,7 +15,7 @@ uint8 Cal_weight(uint30 diff,rawdns_register& rawdns_reg,uint26 ksigma2)
     else if (diff > ksigma2)
     {
         diff = 5 * diff;
-        weight_temp = ((diff * rawdns_reg.invksigma2) >> 12) - 5;
+        weight_temp = ((diff * rawdns_reg.invksigma2) >> 20) - 5;
 
         if(diff < 6 * ksigma2)
             weight = weight_2[0];
@@ -29,7 +27,7 @@ uint8 Cal_weight(uint30 diff,rawdns_register& rawdns_reg,uint26 ksigma2)
     else
     {
         diff = 10 * diff;
-        weight_temp = (diff * rawdns_reg.invksigma2) >> 12;
+        weight_temp = (diff * rawdns_reg.invksigma2) >> 20;
 
         if(diff < ksigma2)
             weight = weight_1[0];
@@ -105,10 +103,8 @@ uint12 rawdns_process(uint12 rawdns_block[11][11],rawdns_register& rawdns_reg, u
 
 void isp_rawdns(top_register& top_reg, rawdns_register& rawdns_reg, stream_u12& src, stream_u12& dst)
 {
-    uint12 rawdns_lines[10][4096];
-#pragma HLS ARRAY_PARTITION variable=rawdns_lines block factor=10 dim=1
+    uint12 rawdns_lines[10][8192];
     uint12 rawdns_block[11][11];
-#pragma HLS ARRAY_PARTITION variable=rawdns_block complete dim=0
 
     uint26 n;
     uint13 i = 0,j = 0,count = 0;
@@ -117,14 +113,12 @@ void isp_rawdns(top_register& top_reg, rawdns_register& rawdns_reg, stream_u12& 
     uint6 sigma = rawdns_reg.sigma;
     uint7 filterpara = rawdns_reg.Filterpara;
     uint13 ksigma  = sigma * filterpara;
-    uint26 ksigma2 = (ksigma * ksigma) >> 16;
+    uint26 ksigma2 = (ksigma * ksigma) >> (16 - 8);
 
     uint12 src_data ,dst_data;
 
     pixel_loop:for(n=0;n<top_reg.frameHeight * top_reg.frameWidth;n++)
     {
-#pragma HLS LOOP_TRIPCOUNT avg=2048
-#pragma HLS PIPELINE
         src_data = src.read();
 
         if(count == top_reg.frameWidth)
@@ -204,7 +198,6 @@ void isp_rawdns(top_register& top_reg, rawdns_register& rawdns_reg, stream_u12& 
     {
         padding_loop1:for(k = 0; k < 5 ;k++)
         {
-#pragma HLS UNROLL
 
             dst_data = rawdns_lines[4][top_reg.frameWidth - 5 + k];
             dst.write(dst_data);
@@ -212,12 +205,9 @@ void isp_rawdns(top_register& top_reg, rawdns_register& rawdns_reg, stream_u12& 
 
         padding_loop2:for(k = 0; k < 5 ;k++)
         {
-#pragma HLS UNROLL factor=5
 
             loop2_inner_loop:for(i = 0;i < top_reg.frameWidth;i++)
             {
-#pragma HLS PIPELINE
-
                 dst_data = rawdns_lines[k + 5][i];
                 dst.write(dst_data);
             }

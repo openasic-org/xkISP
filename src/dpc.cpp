@@ -92,7 +92,7 @@ void dpc(top_register top_reg, dpc_register dpc_reg, stream_u12& src, stream_u12
     uint11 th_w = dpc_reg.th_w;
     uint11 th_b = dpc_reg.th_b;
     
-    uint12 lineBuffer[4][4096];
+    uint12 lineBuffer[4][8192];
 
     int n_n = 0;
 
@@ -163,6 +163,18 @@ void dpc(top_register top_reg, dpc_register dpc_reg, stream_u12& src, stream_u12
                 else{
                     dstData = 0;
                 }
+                #ifdef DEBUG
+                if((row == ROW_TEST + 2) && (col == COL_TEST + 2)) {
+                    printf("\t dpc_in = %d\n",srcData.to_int());
+                    printf("\t dpc_out = %d\n",dstData.to_int());
+                    printf("\t%d\t%d\n",row.to_int(),col.to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\n",rawWindow[0][0].to_int(),rawWindow[0][1].to_int(),rawWindow[0][2].to_int(),rawWindow[0][3].to_int(),rawWindow[0][4].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\n",rawWindow[1][0].to_int(),rawWindow[1][1].to_int(),rawWindow[1][2].to_int(),rawWindow[1][3].to_int(),rawWindow[1][4].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\n",rawWindow[2][0].to_int(),rawWindow[2][1].to_int(),rawWindow[2][2].to_int(),rawWindow[2][3].to_int(),rawWindow[2][4].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\n",rawWindow[3][0].to_int(),rawWindow[3][1].to_int(),rawWindow[3][2].to_int(),rawWindow[3][3].to_int(),rawWindow[3][4].to_int());
+                    printf("\t%d\t%d\t%d\t%d\t%d\n",rawWindow[4][0].to_int(),rawWindow[4][1].to_int(),rawWindow[4][2].to_int(),rawWindow[4][3].to_int(),rawWindow[4][4].to_int());
+                }
+                #endif
             }
             else
             {

@@ -233,7 +233,7 @@ void edgeenhancement(top_register& isp_top, ee_register& ee_top, stream_u36& src
 {
     uint36 src_in,dst_out;
     uint36 ee_block[5][5];
-    uint36 ee_lines[4][4096];
+    uint36 ee_lines[4][8192];
     uint13 i = 0,j = 0,count = 0;
     uint3  k,l;
 

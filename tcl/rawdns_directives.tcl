@@ -1,12 +1,9 @@
-set_directive_loop_merge "rawdns/rawdns_row"
-set_directive_loop_tripcount -max 8192 -avg 1920 "rawdns/rawdns_row"
-set_directive_pipeline "rawdns/rawdns_col"
-set_directive_loop_tripcount -avg 1080 "rawdns/rawdns_col"
-#set_directive_unroll "rawdns/window_outer_loop"
-#set_directive_unroll "rawdns/window_inter_loop"
-#set_directive_unroll "rawdns/padding_outer_loop"
-#set_directive_unroll "rawdns/padding_inter_loop"
-#set_directive_unroll "rawdns/raw_read"
-#set_directive_unroll "rawdns/additional_loop"
-#set_directive_unroll "rawdns/lines_write"
-#set_directive_array_partition rawdns nlm_lines
+set_directive_array_partition -type complete -dim 1 Cal_weight weight_1
+set_directive_array_partition -type complete -dim 1 Cal_weight weight_2
+set_directive_array_partition -type block -factor 10 -dim 1 isp_rawdns rawdns_lines
+set_directive_array_partition -type complete -dim 0 isp_rawdns rawdns_block
+set_directive_loop_tripcount -avg 2048 "isp_rawdns/pixel_loop"
+set_directive_pipeline "isp_rawdns/pixel_loop"
+set_directive_unroll "isp_rawdns/padding_loop1"
+set_directive_unroll -factor 5 "isp_rawdns/padding_loop2"
+set_directive_pipeline "isp_rawdns/loop2_inner_loop"

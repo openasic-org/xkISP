@@ -1,12 +1,14 @@
-#ifndef xkISP_GB_H_
-#define xkISP_GB_H_
+#ifndef _ISP_GB_H_
+#define _ISP_GB_H_
 
 #include "top.h"
 
 #ifndef _ISP_GREENBALANCE_H
 #define _ISP_GREENBALANCE_H
 
-
+//#define _DEBUG_
+//#define ROW_TEST 7
+//#define COL_TEST 6
 
 typedef struct
 {
@@ -37,7 +39,7 @@ inline uint12 gb_clip(int31 A)
 }
 
 
-void greenbalance2(top_register top_reg,gb_register gb_reg,hls::stream<uint12>& src,hls::stream<uint12>& dst);
+void greenbalance2(top_register top_reg, gb_register gb_reg, stream_u12& src, stream_u12& dst);
 uint12 ColumnStatistic(uint12 gb_block[7][7], bool IfRBpixel,uint13 row, uint13 col, gb_register& gb_reg, int16 Gfifo[6], uint3 countfifo[6]);
 
 #endif

@@ -19,10 +19,13 @@ typedef ap_int<19>  int19;
 typedef ap_int<21>  int21;
 typedef ap_int<22>  int22;
 typedef ap_int<23>  int23;
+typedef ap_int<24>  int24;
+typedef ap_int<25>  int25;
 typedef ap_int<27>  int27;
 typedef ap_int<30>  int30;
 typedef ap_int<31>  int31;
 typedef ap_int<34>  int34;
+typedef ap_uint<1>  uint1;
 typedef ap_uint<2>  uint2;
 typedef ap_uint<3>  uint3;
 typedef ap_uint<4>  uint4;
@@ -50,6 +53,7 @@ typedef ap_uint<30> uint30;
 typedef ap_uint<32> uint32;
 typedef ap_uint<33> uint33;
 typedef ap_uint<36> uint36;
+typedef ap_uint<40> uint40;
 typedef ap_uint<42> uint42;
 typedef hls::stream<uint10> stream_u10;
 typedef hls::stream<uint12> stream_u12;
@@ -66,6 +70,9 @@ typedef ap_uint<128> config_t;
 typedef ap_uint<1> bool_t;
 typedef ap_uint<64> tab_t;
 
+#define DEBUG
+#define COL_TEST 636
+#define ROW_TEST 475
 // top module header
 typedef struct{
     uint13  frameWidth;    //13 bits
@@ -147,6 +154,7 @@ typedef struct
     bool_t eb;
     uint6 sigma;
     uint7 Filterpara;
+    uint12  invksigma2;
 }rawdns_register;
 
 uint8 Cal_weight(uint30 diff,rawdns_register& rawdns_reg,uint26 ksigma2);
@@ -317,3 +325,4 @@ typedef struct {
 void crop(top_register top_register, crop_register crop_register, stream_u10 &y_src, stream_u10 &u_src, stream_u10 &v_src, stream_u10& y_dst, stream_u10& u_dst, stream_u10& v_dst);
 
 #endif
+

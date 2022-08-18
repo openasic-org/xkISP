@@ -98,10 +98,14 @@ using namespace std;
     typedef stream_u30  stream_out;
 #endif
 
-/*
 #ifdef catapult
     #include <ac_int.h>
     #include <ac_channel.h>
+    typedef ac_int<4,true>   int4;
+    typedef ac_int<6,true>   int6;
+    typedef ac_int<8,true>   int8;
+    typedef ac_int<9,true>   int9;
+    typedef ac_int<10,true>  int10;
     typedef ac_int<11,true>  int11;
     typedef ac_int<12,true>  int12;
     typedef ac_int<13,true>  int13;
@@ -114,8 +118,12 @@ using namespace std;
     typedef ac_int<21,true>  int21;
     typedef ac_int<22,true>  int22;
     typedef ac_int<23,true>  int23;
+    typedef ac_int<24,true>  int24;
+    typedef ac_int<25,true>  int25;
+    typedef ac_int<27,true>  int27;
     typedef ac_int<31,true>  int31;
     typedef ac_int<34,true>  int34;
+    typedef ac_int<1,false>  uint1;
     typedef ac_int<2,false>  uint2;
     typedef ac_int<3,false>  uint3;
     typedef ac_int<4,false>  uint4;
@@ -131,18 +139,31 @@ using namespace std;
     typedef ac_int<14,false> uint14;
     typedef ac_int<15,false> uint15;
     typedef ac_int<16,false> uint16;
+    typedef ac_int<18,false> uint18;
     typedef ac_int<20,false> uint20;
+    typedef ac_int<21,false> uint21;
+    typedef ac_int<22,false> uint22;
+    typedef ac_int<24,false> uint24;
+    typedef ac_int<25,false> uint25;
+    typedef ac_int<26,false> uint26;
+    typedef ac_int<27,false> uint27;
+    typedef ac_int<28,false> uint28;
+    typedef ac_int<29,false> uint29;
     typedef ac_int<30,false> uint30;
+    typedef ac_int<32,false> uint32;
+    typedef ac_int<33,false> uint33;
+    typedef ac_int<34,false> uint34;
     typedef ac_int<36,false> uint36;
+    typedef ac_int<40,false> uint40;
     typedef ac_int<42,false> uint42;
     typedef ac_channel<uint12>  stream_in;
     typedef ac_channel<uint30>  stream_out;
+    typedef ac_channel<uint10>  stream_u10;
     typedef ac_channel<uint12>  stream_u12;
     typedef ac_channel<uint30>  stream_u30;
     typedef ac_channel<uint36>  stream_u36;
     typedef ac_channel<uint42>  stream_u42;
 #endif
-*/
 
 typedef struct {
     uint13  frameWidth;    //13 bits

@@ -3,7 +3,7 @@
 #define TPG_DST1 "../../../../../tv/tpg_hls.raw"
 #define TPG_GOLDEN1 "../../../../../tv/tpg_out.raw"
 //Dgain
-#define Dgain_SRC1 "../../../../../tv/tpg_out.raw"
+#define Dgain_SRC1 "../../../../../tv/input.raw"
 #define Dgain_DST1 "../../../../../tv/dgain_hls.raw"
 #define Dgain_GOLDEN1 "../../../../../tv/dgain_out.raw"
 //LSC

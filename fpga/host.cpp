@@ -23,9 +23,10 @@
 #include <string>
 #include <cstring>
 
-const std::string TOP_SRC1 = "../../../../xk-isp/Ali_ISP_HLS/tv/input.raw";
-const std::string TOP_CONFIG = "../../../../opensource/xk-isp/Ali_ISP_HLS/tv/hls_param.txt";
+const std::string TOP_SRC1 = "../tv/input.raw";
+const std::string TOP_CONFIG = "../tv/hls_param.txt";
 const std::string TOP_DST1 = "../../../output.yuv";
+const std::string TOP_GODEN1 = "../tv/crop_out_packed.yuv";
 
 typedef in_t img_t;
 const int IMG_WIDTH = 640;
@@ -186,6 +187,7 @@ void config_reg_host(std::vector<tab_t, aligned_allocator<tab_t> > & arg_config)
                 if(strstr(key, "rawdns_filter"))
                 {
                     rawdns_reg.Filterpara = atoi(value);
+                    rawdns_reg.invksigma2 = 4096 * 65536 / (rawdns_reg.Filterpara * rawdns_reg.Filterpara * rawdns_reg.sigma * rawdns_reg.sigma);
                     continue;
                 }
 
@@ -334,8 +336,11 @@ void config_reg_host(std::vector<tab_t, aligned_allocator<tab_t> > & arg_config)
 
     lsc_reg.blockHeight = (top_reg.frameHeight - 1) / 12 + 1;
     lsc_reg.blockWidth = (top_reg.frameWidth - 1) / 16 + 1;
+    //printf("\ttop_reg.frameWidth = %d\n",top_reg.frameWidth.to_int());
+    //printf("\tlsc_reg.blockWidth = %d\n",lsc_reg.blockWidth.to_int());
     lsc_reg.blockHeight_1 = 32768 / lsc_reg.blockHeight;
-    lsc_reg.blockWidth_1 = 524288 / lsc_reg.blockWidth;
+    lsc_reg.blockWidth_1 = 524288 / lsc_reg.blockWidth.to_int();
+    //printf("\tlsc_reg.blockWidth_1 = %d\n",lsc_reg.blockWidth_1.to_int());
 
     int16 m_nGain[12] = {6709, -2591, -22, 0, -632, 5336, -607, 0, 156, -2970, 6912, 0};
 
@@ -479,6 +484,7 @@ void config_reg_host(std::vector<tab_t, aligned_allocator<tab_t> > & arg_config)
 
     c_large.range(43, 43) = yfc_reg.m_nEb;
     c_large.range(44, 44) = yfc_reg.yuvpattern;
+    c_large.range(56, 45) = rawdns_reg.invksigma2;
 
     cmc_gb_yfc_number.range(63, 0) = c_small;
     cmc_gb_yfc_number.range(127, 64) = c_large;
@@ -768,20 +774,22 @@ int main(int argc, char** argv) {
     convert_img(out_img, cvrted_img, CROP_HEIGHT * CROP_WIDTH);
 
     write_img<img_t>(cvrted_img, TOP_DST1, 3 * CROP_HEIGHT * CROP_WIDTH);
-
+    load_img<img_t>(golden_img, TOP_GODEN1, 3 * CROP_HEIGHT * CROP_WIDTH);
     // Compare the results of the Device to the simulation
-    //bool match = true;
-    //for (int i = 0; i < IMG_WIDTH * IMG_HEIGHT * 3; ++i) {
-    //    if (cvrted_img[i] != golden_img[i]) {
-    //        std::cout << "Error: Result mismatch" << std::endl;
-    //        std::cout << "i = " << i << " Golden result = " << golden_img[i]
-    //                  << " Device result = " << cvrted_img[i] << std::endl;
-    //        match = false;
-    //        break;
-    //    }
-    //}
+    bool match = true;
+    for (int i = 0; i < IMG_WIDTH * IMG_HEIGHT * 3; ++i) {
+        if (cvrted_img[i] != golden_img[i]) {
+            std::cout << "Error: Result mismatch" << std::endl;
+            std::cout << "i = " << i << " Golden result = " << golden_img[i]
+                      << " Device result = " << cvrted_img[i] << std::endl;
+            std::cout << "row = "<<i/1920<<" col = "<<(i-(i/1920)*1920)/3<<std::endl;
+            match = false;
+            break;
+        }
+    }
 
     //std::cout << "TEST " << (match ? "PASSED" : "FAILED") << std::endl;
     return 0;
     //return (match ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+

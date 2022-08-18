@@ -22,10 +22,10 @@ int main(int argc, char** argv)
 
     topParam.frameWidth = 640;
     topParam.frameHeight = 480;
-    wbc_param.m_nR= 19575;//4111;
-    wbc_param.m_nGr = 16384;//4096;
-    wbc_param.m_nGb = 16384;//4096;
-    wbc_param.m_nB = 26916;//4088;
+    wbc_param.m_nR= 4821;//4111;
+    wbc_param.m_nGr = 4096;//4096;
+    wbc_param.m_nGb = 4096;//4096;
+    wbc_param.m_nB = 6486;//4088;
 
     //In
     FILE *fp_r1 = fopen(WBC_SRC1, "r");
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
         if(frameGolden[x] != frameOut[x]) {
             printf("\t\tFirst mismatch in pixel %d!\n", x);
             printf("\t\tGolden = %d, result = %d!\n", frameGolden[x], frameOut[x]);
-            //exit(0);
+            exit(0);
         }
     }
     printf("\tTest passed!\n");

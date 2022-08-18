@@ -37,14 +37,28 @@ void awb(top_register top_reg, awb_register& awb_reg, stream_u12 &src, stream_u1
             }
             dst_t = src_t;
             dst.write(dst_t);
+            #ifdef  DEBUG 
+            if ((x == ROW_TEST)&&(y == COL_TEST)) {
+                 printf("\t%d\n",src_t.to_int());
+            }
+            #endif
         }
     }
 
     r_avg = (r_total * awb_reg.coeff) >> 19;
     g_avg = (g_total * awb_reg.coeff) >> 20;
     b_avg = (b_total * awb_reg.coeff) >> 19;
+#ifdef DEBUG
+    awb_reg.r_gain = 4096 * g_total / r_total >> 1;
+    awb_reg.g_gain = 4096;
+    awb_reg.b_gain = 4096 * g_total / b_total >> 1;
 
-    awb_reg.r_gain = 16384 * g_avg / r_avg;
-    awb_reg.g_gain = 16384;
-    awb_reg.b_gain = 16384 * g_avg / b_avg;
+    printf ("r_gain_1 = %d\n" ,r_avg.to_int() );
+    printf ("g_gain_1 = %d\n" ,g_avg.to_int() );
+    printf ("b_gain_1 = %d\n" ,b_avg.to_int() );
+#else
+    awb_reg.r_gain = r_avg;
+    awb_reg.g_gain = g_avg;
+    awb_reg.b_gain = b_avg;
+#endif
 }

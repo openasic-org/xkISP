@@ -67,7 +67,7 @@ void cmc(top_register top_reg, cmc_register cmc_reg, stream_u36 &src, stream_u42
                     temp2 = (temp1 >> CMC_SHIFT_DEEP) + temph + tempblc + gain[k*4+3];
                     #ifdef DEBUG
                     if((y == ROW_TEST) && (x == COL_TEST)){
-                        printf("\t%x\t%x\t%x\n",temph.to_int(),tempblc.to_int(),temp.to_int());
+                        printf("\t%x\t%x\t\n",temph.to_int(),tempblc.to_int());
                         printf("\t%x\t%x\t%x\n",gain[k*3].to_int(),gain[k*3+1].to_int(),gain[k*3+2].to_int());
                     }
                     #endif

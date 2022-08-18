@@ -9,8 +9,8 @@ void yfc(top_register top_reg, yfc_register yfc_reg, stream_u30& src, stream_u10
     uint11 v_tmp_422;
     uint12 u_tmp_420;
     uint12 v_tmp_420;
-    uint10 u_linebuffer[4096];
-    uint10 v_linebuffer[4096];
+    uint10 u_linebuffer[8192];
+    uint10 v_linebuffer[8192];
     
     
     yfc_row: for (uint13 y = 0; y < top_reg.frameHeight; y++) {

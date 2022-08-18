@@ -30,7 +30,7 @@ int14 BilinearInterpolation(uint13 LeftTopGain, uint13 LeftDownGain,uint13 Right
     return result;
 };
 
-void lsc(top_register topRegister, lsc_register lscRegister, stream_u12 &src, stream_u12 &dst)
+void lsc(top_register topRegister, lsc_register &lscRegister, stream_u12 &src, stream_u12 &dst)
 {
     uint12 src_w;
     uint12 dst_t;
@@ -73,13 +73,6 @@ void lsc(top_register topRegister, lsc_register lscRegister, stream_u12 &src, st
     uint13 gain_ld;
     uint13 gain_rd;
 
-    lsc_row: for(uint13 y = 0; y < topRegister.frameHeight; y++){
-        lsc_col: for(uint13 x = 0; x < topRegister.frameWidth; x++){
-            src_w = src.read();
-            if(lscRegister.eb == 1)
-            {
-                if((x == 0) && (y == 0))
-                {
                     gain_0_lt = lscRegister.rGain[0];
                     gain_0_rt = lscRegister.rGain[1];
                     gain_0_ld = lscRegister.rGain[17];
@@ -101,7 +94,11 @@ void lsc(top_register topRegister, lsc_register lscRegister, stream_u12 &src, st
                     gain_Grb_t_nxt = line_is_blue ? lscRegister.bGain[2] : lscRegister.GrGain[2];
                     gain_Grb_d_nxt = line_is_blue ? lscRegister.bGain[19] : lscRegister.GrGain[19];
                     line_is_blue = (bayerPattern > 1); //0: red; 1: blue
-                }
+    lsc_row: for(uint13 y = 0; y < topRegister.frameHeight; y++){
+        lsc_col: for(uint13 x = 0; x < topRegister.frameWidth; x++){
+            src_w = src.read();
+            if(lscRegister.eb == 1)
+            {
                 //calculation
                 bayerPattern = (((y & 1) << 1) + (x & 1)) ^ topRegister.imgPattern;
                 src_t = src_w - topRegister.blc;
@@ -150,7 +147,10 @@ void lsc(top_register topRegister, lsc_register lscRegister, stream_u12 &src, st
                     printf("\t block_width_count = %d\n", block_width_count.to_int());
                     printf("\t block_height_count = %d\n", block_height_count.to_int());
                     printf("\t lsc_out = %d\n", dst_t.to_int());
-                }
+                    printf("\t block_width_1 = %d", block_width_1.to_int());
+                    printf("\t block_height_1 = %d", block_height_1.to_int());
+                    printf("\t dst_value = %d", dst_value.to_int());
+		}
                 #endif
 
                 //update
@@ -194,6 +194,7 @@ void lsc(top_register topRegister, lsc_register lscRegister, stream_u12 &src, st
                     block_count_Gbb++;
                 }
 
+                if(block_width > 12) {
                 if((block_width_count == block_width - 1) && (line_is_blue == 0))
                 {
                     gain_0_lt = gain_0_rt;
@@ -237,7 +238,9 @@ void lsc(top_register topRegister, lsc_register lscRegister, stream_u12 &src, st
                 {
                     gain_1_rd = lscRegister.GrGain[block_count_rGr + 16];
                 }
+                }
 
+                if(block_width > 12) {
                 if((block_width_count == block_width - 1) && (line_is_blue == 1))
                 {
                     gain_2_lt = gain_2_rt;
@@ -281,6 +284,7 @@ void lsc(top_register topRegister, lsc_register lscRegister, stream_u12 &src, st
                 {
                     gain_3_rd = lscRegister.bGain[block_count_Gbb + 16];
                 }
+                }
 
                 if(block_width_count == 0)
                 {
@@ -317,7 +321,7 @@ void lsc(top_register topRegister, lsc_register lscRegister, stream_u12 &src, st
                     block_width_count++;
                 }
 
-                if(x == topRegister.frameWidth - 1)
+                if(x == topRegister.frameWidth - 1) //update line is blue
                 {
                     line_is_blue = (line_is_blue == 0);
                 }

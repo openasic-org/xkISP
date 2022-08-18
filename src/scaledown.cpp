@@ -7,10 +7,9 @@ void scaledown(top_register top_reg, scaledown_register scaledown_reg, stream_u1
     uint15 y_tmp;
     uint15 u_tmp;
     uint15 v_tmp;
-    uint10 y_linebuffer[3][4096];
-    uint10 u_linebuffer[3][4096];
-    uint10 v_linebuffer[3][4096];
-
+    uint10 y_linebuffer[3][8192];
+    uint10 u_linebuffer[3][8192];
+    uint10 v_linebuffer[3][8192];
 
     scaledown_row: for (uint13 y = 0; y < top_reg.frameHeight; y++) {
         scaledown_col: for (uint13 x = 0; x < top_reg.frameWidth; x++) {
@@ -18,6 +17,7 @@ void scaledown(top_register top_reg, scaledown_register scaledown_reg, stream_u1
             y_t = y_src.read();
             u_t = u_src.read();
             v_t = v_src.read();
+
             if(scaledown_reg.m_nEb == 1)
             {
                 if(scaledown_reg.yuvpattern == 0)

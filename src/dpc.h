@@ -14,3 +14,4 @@ bool defectPixelDetection(uint12 arr_ori[8], uint12 pixel, uint11 th_w, uint11 t
 void dpc(top_register top_reg, dpc_register dpc_reg, stream_u12& src, stream_u12& dst);
 
 #endif
+

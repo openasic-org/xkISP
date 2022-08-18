@@ -61,9 +61,9 @@ int main(int argc, char** argv)
     }
     printf("\tTest passed!\n");
 
-    cout << "c_r_gain = " << 19575 << endl;
-    cout << "c_g_gain = " << 16384  << endl;
-    cout << "c_b_gain = " << 26916 << endl;
+    cout << "c_r_gain = " << 4821 << endl;
+    cout << "c_g_gain = " << 4096  << endl;
+    cout << "c_b_gain = " << 6486 << endl;
     cout << "r_gain = " << awb_param.r_gain << endl;
     cout << "g_gain = " << awb_param.g_gain << endl;
     cout << "b_gain = " << awb_param.b_gain << endl;
