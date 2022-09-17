@@ -47,8 +47,16 @@
 #define GTM_SRC1 "../../../../../tv/cmc_out.rgb"
 #define GTM_DST1 "../../../../../tv/gtm_hls.rgb"
 #define GTM_GOLDEN1 "../../../../../tv/gtm_out.rgb"
+//LTM
+#define LTM_SRC1    "../../../../../tv/gtm_out.rgb"
+#define LTM_DST1    "../../../../../tv/ltm_hls.rgb"
+#define LTM_GOLDEN1 "../../../../../tv/ltm_out.rgb"
+//CAC
+#define CAC_SRC1 "../../../../../tv/ltm_out.rgb"
+#define CAC_DST1 "../../../../../tv/cac_hls.rgb"
+#define CAC_GOLDEN1 "../../../../../tv/cac_out.rgb"
 //CSC
-#define CSC_SRC1 "../../../../../tv/gtm_out.rgb"
+#define CSC_SRC1 "../../../../../tv/cac_out.rgb"
 #define CSC_DST1 "../../../../../tv/csc_hls.rgb"
 #define CSC_GOLDEN1 "../../../../../tv/csc_out.yuv"
 //YFC

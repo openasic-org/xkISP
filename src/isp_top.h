@@ -15,6 +15,8 @@
 #include "ee.h"
 #include "cmc.h"
 #include "gtm.h"
+#include "ltm.h"
+#include "cac.h"
 #include "csc.h"
 #include "yfc.h"
 #include "yuvdns.h"
@@ -35,6 +37,7 @@ void isp_top(stream_u12 &src, stream_u30 &dst,
              ee_register ee_register,
              cmc_register cmc_register,
              gtm_register gtm_register,
+             ltm_register ltm_register,
              csc_register csc_register,
              yfc_register yfc_register,
              yuvdns_register yuvdns_register,

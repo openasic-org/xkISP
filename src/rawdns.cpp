@@ -7,6 +7,7 @@ uint8 Cal_weight(uint30 diff,rawdns_register& rawdns_reg,uint26 ksigma2)
 
     uint8 weight;
     uint40 weight_temp;
+    
 
     if(ksigma2 == 0)
     {
@@ -62,7 +63,7 @@ uint30 Cal_Eur_Distance(uint12 rawdns_block[11][11], uint4 cur_y, uint4 cur_x)
     return Eur_distance;
 }
 
-uint12 rawdns_process(uint12 rawdns_block[11][11],rawdns_register& rawdns_reg, uint26 ksigma2,uint13 row,uint13 col)
+uint12 rawdns_process(uint12 rawdns_block[11][11],rawdns_register& rawdns_reg, uint26 ksigma2,uint13 row,uint13 col,bool nlm_en)
 {
     uint30 eur_distance;
     int30  diff;
@@ -72,6 +73,7 @@ uint12 rawdns_process(uint12 rawdns_block[11][11],rawdns_register& rawdns_reg, u
     uint6 sigma = rawdns_reg.sigma;
     uint14 sigma2 = 2 * sigma * sigma;
     uint8 weight,max_weight = 0;
+    uint25 total_q;
 
     for(k=1;k<=9;k+=2){
         for(l=1;l<=9;l+=2){
@@ -95,10 +97,16 @@ uint12 rawdns_process(uint12 rawdns_block[11][11],rawdns_register& rawdns_reg, u
     total_weight += max_weight;
     total_value += max_weight * rawdns_block[5][5];
 
-    if(total_weight == 0)
+    if(total_weight == 0 || nlm_en == 0)
         return rawdns_block[5][5];
     else
-        return rawdns_clip(total_value/total_weight);
+    #ifdef catapult
+        ac_math::ac_div(total_value, total_weight, total_q);
+    #endif
+    #ifdef vivado
+        total_q = total_value / total_weight;
+    #endif    
+        return rawdns_clip(total_q);
 }
 
 void isp_rawdns(top_register& top_reg, rawdns_register& rawdns_reg, stream_u12& src, stream_u12& dst)
@@ -150,16 +158,9 @@ void isp_rawdns(top_register& top_reg, rawdns_register& rawdns_reg, stream_u12& 
                 rawdns_lines[l][j] = rawdns_block[l+1][10];
             }
 
-
-            if((i > 9) && (j > 9))
-            {
-                dst_data = rawdns_process(rawdns_block, rawdns_reg,ksigma2,i,j);
-            }
-            else
-            {
-                dst_data = rawdns_block[5][5];
-            }
-
+            bool nlm_en = (i > 9) && (j > 9);
+            dst_data = rawdns_process(rawdns_block, rawdns_reg,ksigma2,i,j,nlm_en);
+            
             #ifdef  DEBUG
                 if ((i == ROW_TEST + 5)&&(j == COL_TEST + 5))
                 {

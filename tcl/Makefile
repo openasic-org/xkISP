@@ -1,13 +1,13 @@
 #make file for module level verification
 
-all: tpg dgain lsc dpc rawdns awb wbc gb demosaic ee cmc gtm csc yfc yuvdns scaledown crop
+all: tpg dgain lsc dpc rawdns awb wbc gb demosaic ee cmc ltm gtm cac csc yfc yuvdns scaledown crop
 
 #before 2021.1 vivado_hls
 #after 2021.1 vitis_hls
 cmd = vitis_hls
 
 clean:
-	rm -rf tpg dgain lsc dpc rawdns awb wbc gb demosaic ee cmc gtm csc yfc yuvdns scaledown crop
+	rm -rf tpg dgain lsc dpc rawdns awb wbc gb demosaic ee cmc ltm gtm cac csc yfc yuvdns scaledown crop
 
 tpg:
 	$(cmd) -f tpg.tcl
@@ -42,8 +42,14 @@ ee:
 cmc:
 	$(cmd) -f cmc.tcl
 
+ltm:
+	$(cmd) -f ltm.tcl
+
 gtm:
 	$(cmd) -f gtm.tcl
+
+cac:
+	$(cmd) -f cac.tcl
 
 csc:
 	$(cmd) -f csc.tcl

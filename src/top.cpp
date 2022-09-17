@@ -11,6 +11,8 @@
 #include "ee.h"
 #include "cmc.h"
 #include "gtm.h"
+#include "ltm.h"
+#include "cac.h"
 #include "csc.h"
 #include "yfc.h"
 #include "yuvdns.h"
@@ -34,6 +36,8 @@ void isp_top(stream_u12 &src,
              ee_register ee_register,
              cmc_register cmc_register,
              gtm_register gtm_register,
+             ltm_register ltm_register,
+             cac_register cac_register,
              csc_register csc_register,
              yfc_register yfc_register,
              yuvdns_register yuvdns_register,
@@ -53,6 +57,7 @@ void isp_top(stream_u12 &src,
     #pragma HLS INTERFACE s_axilite port=demosaic_register bundle=demosaic_regs
     #pragma HLS INTERFACE s_axilite port=cmc_register bundle=cmc_regs
     #pragma HLS INTERFACE s_axilite port=gtm_register bundle=gtm_regs
+    #pragma HLS INTERFACE s_axilite port=ltm_register bundle=ltm_regs
     #pragma HLS INTERFACE s_axilite port=csc_register bundle=csc_regs
     #pragma HLS INTERFACE s_axilite port=yuv444to422_register bundle=yuv444to422_regs
     #pragma HLS INTERFACE s_axilite port=crop_register bundle=crop_regs
@@ -83,6 +88,8 @@ void isp_top(stream_u12 &src,
     #pragma HLS STREAM variable=demosaic_cmc_data depth=2 dim=1
     stream_u42 cmc_gtm_data;
     #pragma HLS STREAM variable=cmc_gtm_data depth=2 dim=1
+    stream_u42 gtm_ltm_data;
+    #pragma HLS STREAM variable=gtm_ltm_data depth=2 dim=1
     stream_u42 gtm_csc_data;
     #pragma HLS STREAM variable=gtm_csc_data depth=2 dim=1
     stream_u30 csc_444to422_data;
@@ -105,7 +112,9 @@ void isp_top(stream_u12 &src,
     static stream_u36 demosaic_ee_data;
     static stream_u36 ee_cmc_data;
     static stream_u42 cmc_gtm_data;
-    static stream_u42 gtm_csc_data;
+    static stream_u42 gtm_ltm_data;
+    static stream_u42 ltm_cac_data;
+    static stream_u42 cac_csc_data;
     static stream_u30 csc_yfc_data;
     static stream_u10 yfc_yuvdns_data_y;
     static stream_u10 yfc_yuvdns_data_u;
@@ -129,8 +138,10 @@ void isp_top(stream_u12 &src,
     demosaic(top_register, demosaic_register, gb_demosaic_data, demosaic_ee_data);
     edgeenhancement(top_register, ee_register, demosaic_ee_data, ee_cmc_data);
     cmc(top_register, cmc_register, ee_cmc_data, cmc_gtm_data);
-    gtm(top_register, gtm_register, cmc_gtm_data, gtm_csc_data);
-    csc(top_register, csc_register, gtm_csc_data, csc_yfc_data);
+    gtm(top_register, gtm_register, cmc_gtm_data, gtm_ltm_data);
+    ltm(top_register,ltm_register,gtm_ltm_data,ltm_cac_data);
+    cac(top_register, cac_register, ltm_cac_data, cac_csc_data);
+    csc(top_register, csc_register, cac_csc_data, csc_yfc_data);
     yfc(top_register, yfc_register, csc_yfc_data, yfc_yuvdns_data_y, yfc_yuvdns_data_u, yfc_yuvdns_data_v);
     yuv444dns(top_register, yuvdns_register, yfc_yuvdns_data_y, yfc_yuvdns_data_u, yfc_yuvdns_data_v, yuvdns_scale_data_y, yuvdns_scale_data_u, yuvdns_scale_data_v);
     scaledown(top_register, scaledown_register, yuvdns_scale_data_y, yuvdns_scale_data_u, yuvdns_scale_data_v, scale_crop_data_y, scale_crop_data_u, scale_crop_data_v);

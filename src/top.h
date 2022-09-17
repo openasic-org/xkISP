@@ -18,6 +18,7 @@ using namespace std;
 #ifdef vivado
     #include <ap_int.h>
     #include <hls_stream.h>
+    typedef ap_int<2>   int2;
     typedef ap_int<4>   int4;
     typedef ap_int<6>   int6;
     typedef ap_int<8>   int8;
@@ -40,6 +41,7 @@ using namespace std;
     typedef ap_int<27>  int27;
     typedef ap_int<30>  int30;
     typedef ap_int<31>  int31;
+    typedef ap_int<32>  int32;
     typedef ap_int<34>  int34;
     typedef ap_uint<1>  uint1;
     typedef ap_uint<2>  uint2;
@@ -58,6 +60,7 @@ using namespace std;
     typedef ap_uint<15> uint15;
     typedef ap_uint<16> uint16;
     typedef ap_uint<18> uint18;
+    typedef ap_uint<19> uint19;
     typedef ap_uint<20> uint20;
     typedef ap_uint<21> uint21;
     typedef ap_uint<22> uint22;
@@ -101,6 +104,9 @@ using namespace std;
 #ifdef catapult
     #include <ac_int.h>
     #include <ac_channel.h>
+    #include <ac_math.h>
+    using namespace ac_math;
+    typedef ac_int<2,true>   int2;
     typedef ac_int<4,true>   int4;
     typedef ac_int<6,true>   int6;
     typedef ac_int<8,true>   int8;
@@ -122,6 +128,7 @@ using namespace std;
     typedef ac_int<25,true>  int25;
     typedef ac_int<27,true>  int27;
     typedef ac_int<31,true>  int31;
+    typedef ac_int<32,true>  int32;
     typedef ac_int<34,true>  int34;
     typedef ac_int<1,false>  uint1;
     typedef ac_int<2,false>  uint2;
@@ -140,6 +147,7 @@ using namespace std;
     typedef ac_int<15,false> uint15;
     typedef ac_int<16,false> uint16;
     typedef ac_int<18,false> uint18;
+    typedef ac_int<19,false> uint19;
     typedef ac_int<20,false> uint20;
     typedef ac_int<21,false> uint21;
     typedef ac_int<22,false> uint22;

@@ -2,6 +2,7 @@
 #define  _ISP_RAWDNS_HLS_
 
 #include "top.h"
+
 typedef struct{
     uint6   sigma;    //range[0-63]
     uint1   eb;       //{0,1}
@@ -34,6 +35,6 @@ inline uint12 rawdns_clip(uint25 result)
 
 uint8 Cal_weight(uint30 diff,rawdns_register& rawdns_reg,uint26 ksigma2);
 uint30 Cal_Eur_Distance(uint12 rawdns_block[11][11], uint4 cur_y, uint4 cur_x);
-uint12 rawdns_process(uint12 rawdns_block[11][11],rawdns_register& rawdns_reg,uint26 ksigma2,uint13 row, uint13 col);
+uint12 rawdns_process(uint12 rawdns_block[11][11],rawdns_register& rawdns_reg,uint26 ksigma2,uint13 row, uint13 col, bool nlm_en);
 void isp_rawdns(top_register& top_reg, rawdns_register& rawdns_reg, stream_u12& src, stream_u12& dst);
 #endif

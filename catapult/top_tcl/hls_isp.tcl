@@ -30,6 +30,8 @@ solution file add ../../src/cmc.h -type CHEADER
 solution file add ../../src/cmc.cpp -type C++
 solution file add ../../src/gtm.h -type CHEADER
 solution file add ../../src/gtm.cpp -type C++
+solution file add ../../src/ltm.h -type CHEADER
+solution file add ../../src/ltm.cpp -type C++
 solution file add ../../src/csc.h -type CHEADER
 solution file add ../../src/csc.cpp -type C++
 solution file add ../../src/yfc.h -type CHEADER
@@ -44,7 +46,8 @@ solution file add ../../src/top.h -type CHEADER
 solution file add ../../src/top.cpp -type C++
 solution file add ../../src/isp_top.h -type CHEADER
 solution file add ../../tb/tb_top.cpp -type C++ -exclude true
-
+solution file add ../../src/cac.cpp -type C++
+solution file add ../../src/cac.h -type CHEADER
 directive set -DESIGN_GOAL area
 directive set -SPECULATE true
 directive set -MERGEABLE true
@@ -100,12 +103,13 @@ solution design set demosaic -block
 solution design set edgeenhancement -block
 solution design set cmc -block
 solution design set gtm -block
+solution design set ltm -block
 solution design set csc -block
 solution design set yfc -block
 solution design set yuv444dns -block
 solution design set scaledown -block
 solution design set crop -block
-
+solution design set cac -block
 go compile
 solution library add nangate-45nm_beh -- -rtlsyntool DesignCompiler
 solution library add ccs_sample_mem
@@ -412,7 +416,6 @@ directive set /isp_top/rawdns_register.sigma:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/rawdns_register.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/rawdns_register.Filterpara:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/rawdns_register.invksigma2:rsc -MAP_TO_MODULE {[DirectInput]}
-
 directive set /isp_top/crop/core/main -PIPELINE_INIT_INTERVAL 1
 directive set /isp_top/scaledown/core/y_linebuffer:rsc -MAP_TO_MODULE ccs_sample_mem.ccs_ram_sync_dualport
 directive set /isp_top/scaledown/core/y_linebuffer:rsc -BLOCK_SIZE 4096
@@ -435,7 +438,6 @@ directive set /isp_top/yuv444dns/core/uWindow:rsc -MAP_TO_MODULE {[Register]}
 directive set /isp_top/yuv444dns/core/uWindow:rsc -GEN_EXTERNAL_ENABLE false
 directive set /isp_top/yuv444dns/core/vWindow:rsc -MAP_TO_MODULE {[Register]}
 directive set /isp_top/yuv444dns/core/vWindow:rsc -GEN_EXTERNAL_ENABLE false
-
 directive set /isp_top/scaledown/scaledown_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/scaledown/scaledown_reg.yuvpattern:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/scaledown/scaledown_reg.times:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -476,6 +478,50 @@ directive set /isp_top/crop_register.upper_left_y:rsc -MAP_TO_MODULE {[DirectInp
 directive set /isp_top/crop_register.lower_right_x:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/crop_register.lower_right_y:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/crop_register.yuvpattern:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/cac/cac_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/cac/cac_reg.t_transient:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/cac/cac_reg.t_edge:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/cac/core/rgbWindow:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/cac/core/lineBuffer:rsc -BLOCK_SIZE 8192
+directive set /isp_top/cac/core/rgbWindow:rsc -INTERLEAVE 7
+directive set /isp_top/cac/core/inPixel_int.r:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/cac/core/inPixel_int.r:rsc -INTERLEAVE 7
+directive set /isp_top/cac/core/inPixel_int.g:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/cac/core/inPixel_int.g:rsc -INTERLEAVE 7
+directive set /isp_top/cac/core/inPixel_int.b:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/cac/core/inPixel_int.b:rsc -INTERLEAVE 7
+directive set /isp_top/cac/core/main -PIPELINE_INIT_INTERVAL 1
+directive set /isp_top/cac_register.eb:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/cac_register.t_transient:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/cac_register.t_edge:rsc -MAP_TO_MODULE {[DirectInput]}
+
+
+directive set /isp_top/ltm/core/rWindow:rsc -BLOCK_SIZE 1
+directive set /isp_top/ltm/core/rWindow:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/ltm/core/gWindow:rsc -BLOCK_SIZE 1
+directive set /isp_top/ltm/core/gWindow:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/ltm/core/bWindow:rsc -BLOCK_SIZE 1
+directive set /isp_top/ltm/core/bWindow:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/ltm/core/rlineBuf:rsc -BLOCK_SIZE 4096
+directive set /isp_top/ltm/core/glineBuf:rsc -BLOCK_SIZE 4096
+directive set /isp_top/ltm/core/blineBuf:rsc -BLOCK_SIZE 4096
+directive set /isp_top/ltm/core/bilaterS:u_lWindow:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/ltm/core/bilaterS:u_lWindow:rsc -BLOCK_SIZE 1
+directive set /isp_top/ltm/core/bilaterS:u_logWindow:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/ltm/core/bilaterS:u_logWindow:rsc -BLOCK_SIZE 1
+directive set /isp_top/ltm/core/ltm_row -PIPELINE_INIT_INTERVAL 1
+directive set /isp_top/ltm/core/addon_loop_1 -PIPELINE_INIT_INTERVAL 1
+directive set /isp_top/ltm/core/addon_loop_2 -PIPELINE_INIT_INTERVAL 1
+directive set /isp_top/ltm/core/main -PIPELINE_INIT_INTERVAL 1
+
+directive set /isp_top/ltm/ltm_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/ltm/ltm_reg.ratio:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/ltm/ltm_reg.contrast:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/ltm/core/biS_loop1 -UNROLL no
+directive set /isp_top/ltm/core/biS_loop2 -UNROLL no
+directive set /isp_top/ltm/core/biS_loop3 -UNROLL no
+directive set /isp_top/ltm/core/biS_loop4 -UNROLL no
+
 
 go architect
 go allocate

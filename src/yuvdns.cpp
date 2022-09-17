@@ -29,9 +29,11 @@ uint10 yuvdns_clip(uint10 a,int upper,int lower) {
 }
 
 
-uint10 yuvdns_nlm(uint10 Window[9][9],uint14 sigma2, uint14 H2,uint18 invH2){
+uint10 yuvdns_nlm(uint10 Window[9][9],uint14 sigma2, uint14 H2,uint18 invH2, bool nlm_en){
     uint8  weight_1[8]={255,226,200,176,156,138,122,108};
     uint8  weight_2[16]={88,72,59,48,39,32,26,21,17,14,11,9,7,5,2,0};
+    uint10 totalq;
+    
 
     uint21 diff;
     uint22 diff_1;
@@ -128,10 +130,16 @@ uint10 yuvdns_nlm(uint10 Window[9][9],uint14 sigma2, uint14 H2,uint18 invH2){
     totalweight =  totalweight + maxweight;
     totalvalue = totalvalue + Window[4][4] * maxweight;
 
-    if(totalweight==0)
+    if(totalweight==0 || nlm_en==0)
         return Window[4][4];
     else
-        return yuvdns_clip(totalvalue / totalweight, YUVDNS_Max_Value, 0);
+    #ifdef catapult
+        ac_math::ac_div(totalvalue, totalweight, totalq);
+    #endif
+    #ifdef vivado
+        totalq = totalvalue / totalweight;
+    #endif 
+        return yuvdns_clip(totalq, YUVDNS_Max_Value, 0);
 }
 
 void yuv444dns(top_register top_reg, yuvdns_register yuvdns_reg, stream_u10 &src_y, stream_u10 &src_u, stream_u10 &src_v, stream_u10 &dst_y, stream_u10 &dst_u, stream_u10 &dst_v){
@@ -181,47 +189,46 @@ void yuv444dns(top_register top_reg, yuvdns_register yuvdns_reg, stream_u10 &src
                     ulineBuf[7][col] = u_t;     
                     vlineBuf[7][col] = v_t;     
 
-                yuvdns:if((row > 7) && (col > 7)){
-                    y_dst_t = yuvdns_nlm(yWindow,yuvdns_reg.ysigma2,yuvdns_reg.yH2,yuvdns_reg.yinvH2);
-                    u_dst_t = yuvdns_nlm(uWindow,yuvdns_reg.uvsigma2,yuvdns_reg.uvH2,yuvdns_reg.uvinvH2);
-                    v_dst_t = yuvdns_nlm(vWindow,yuvdns_reg.uvsigma2,yuvdns_reg.uvH2,yuvdns_reg.uvinvH2);
-                }
-                else{
-                    y_dst_t = yWindow[4][4];
-                    u_dst_t = uWindow[4][4];
-                    v_dst_t = vWindow[4][4];
+                bool nlm_en = (row > 7) && (col > 7);
+                y_dst_t = yuvdns_nlm(yWindow,yuvdns_reg.ysigma2,yuvdns_reg.yH2,yuvdns_reg.yinvH2, nlm_en);
+                u_dst_t = yuvdns_nlm(uWindow,yuvdns_reg.uvsigma2,yuvdns_reg.uvH2,yuvdns_reg.uvinvH2, nlm_en);
+                v_dst_t = yuvdns_nlm(vWindow,yuvdns_reg.uvsigma2,yuvdns_reg.uvH2,yuvdns_reg.uvinvH2, nlm_en);
+                if((row > 4) || ((row == 4) && (col > 3))){
+                    dst_y.write(y_dst_t);
+                    dst_u.write(u_dst_t);
+                    dst_v.write(v_dst_t);
                 }
             }
             else{
                 y_dst_t = y_t;
                 u_dst_t = u_t;
                 v_dst_t = v_t;
-            }
-
-            if((row > 4) || ((row == 4) && (col > 3))){
                 dst_y.write(y_dst_t);
                 dst_u.write(u_dst_t);
                 dst_v.write(v_dst_t);
             }
+
+            
         }
     }
-
-    addon_loop_1: for (uint3 i = 0; i < 4; i++){
-        y_dst_t = yWindow[4][i+5];
-        u_dst_t = uWindow[4][i+5];
-        v_dst_t = vWindow[4][i+5];
-        dst_y.write(y_dst_t);
-        dst_u.write(u_dst_t);
-        dst_v.write(v_dst_t);
-    }
-    addon_loop_2: for (uint3 i = 0; i < 4; i++){
-        for(uint13 j = 0; j < top_reg.frameWidth; j++){
-            y_dst_t = ylineBuf[i+4][j];
-            u_dst_t = ulineBuf[i+4][j];
-            v_dst_t = vlineBuf[i+4][j];
+    if(yuvdns_reg.eb == 1){
+        addon_loop_1: for (uint3 i = 0; i < 4; i++){
+            y_dst_t = yWindow[4][i+5];
+            u_dst_t = uWindow[4][i+5];
+            v_dst_t = vWindow[4][i+5];
             dst_y.write(y_dst_t);
             dst_u.write(u_dst_t);
             dst_v.write(v_dst_t);
+        }
+        addon_loop_2: for (uint3 i = 0; i < 4; i++){
+            for(uint13 j = 0; j < top_reg.frameWidth; j++){
+                y_dst_t = ylineBuf[i+4][j];
+                u_dst_t = ulineBuf[i+4][j];
+                v_dst_t = vlineBuf[i+4][j];
+                dst_y.write(y_dst_t);
+                dst_u.write(u_dst_t);
+                dst_v.write(v_dst_t);
+            }
         }
     }
 }
