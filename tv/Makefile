@@ -1,6 +1,6 @@
 #make file for test vector generation
 
-run: 
+run:
 	./isp -i input.raw -o output.yuv -c hls_param.txt
 
 clean:

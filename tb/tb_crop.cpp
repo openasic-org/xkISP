@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     crop_param.m_nEb = 1;
     uint13 out_width = crop_param.lower_right_y - crop_param.upper_left_y;
     uint13 out_height = crop_param.lower_right_x - crop_param.upper_left_x;
-    
+
     uint16_t* frameIn_1 = (uint16_t*)malloc(3 * topParam.frameWidth * topParam.frameHeight * sizeof(uint16_t));
     uint16_t* frameGolden_1 = (uint16_t*)malloc(3 * out_width * out_height * sizeof(uint16_t));
     uint16_t* frameOut_1 = (uint16_t*)malloc(3 * out_width * out_height * sizeof(uint16_t));
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     uint16_t* frameOut_3 = (uint16_t*)malloc(3 * out_width * out_height * sizeof(uint16_t) / 2);
 
     crop_param.yuvpattern = 0;
-    
+
     //In
     FILE *fp_r1 = fopen(CROP_SRC1, "r");
     if(!fp_r1){

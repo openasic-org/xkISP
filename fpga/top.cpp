@@ -946,7 +946,7 @@ void awb(top_register top_register, awb_register awb_register, stream_u12 &src, 
         awb_col: for (uint13 x = 0; x < top_register.frameWidth; x++) {
             #pragma HLS pipeline
             #pragma HLS loop_tripcount avg=1080
-            src_t = src.read();                      
+            src_t = src.read();
             if(awb_register.eb == 1)
             {
                 uint2  bayerPattern = (((y & 1) << 1) + (x & 1))^top_register.imgPattern;
@@ -2152,9 +2152,9 @@ uint10 yuvdns_nlm(uint10 Window[9][9],uint14 sigma2, uint14 H2,uint18 invH2){
     uint22 diff_1;
     uint22 diff_2;
     uint22 diff_3;
-    uint28 diff_tmp; 
-    uint8 weight = 0, maxweight = 0; 
-    uint14 totalweight =0; 
+    uint28 diff_tmp;
+    uint8 weight = 0, maxweight = 0;
+    uint14 totalweight =0;
     uint25 totalvalue = 0;
     nlm_row_loop:for (uint4 j = 1; j < 8; j++){
         #pragma HLS LOOP_TRIPCOUNT max=7 min=3
@@ -2222,7 +2222,7 @@ uint10 yuvdns_nlm(uint10 Window[9][9],uint14 sigma2, uint14 H2,uint18 invH2){
                 uint32 count = 0;
                 if(H2 == 0){
                     weight = 0;
-                }                   
+                }
                 else if(diff <= H2){
                     diff_tmp = 7 * diff;
                     count = (diff_tmp * invH2)>>14;
@@ -2266,26 +2266,26 @@ void yuv444dns(top_register top_register, yuvdns_register yuvdns_reg, stream_u10
     uint10 ulineBuf[8][4096];
     uint10 vlineBuf[8][4096];
 
-    #pragma HLS array_partition variable=yWindow dim=0 complete   
-    #pragma HLS array_partition variable=uWindow dim=0 complete   
-    #pragma HLS array_partition variable=vWindow dim=0 complete   
+    #pragma HLS array_partition variable=yWindow dim=0 complete
+    #pragma HLS array_partition variable=uWindow dim=0 complete
+    #pragma HLS array_partition variable=vWindow dim=0 complete
     #pragma HLS array_partition variable=ylineBuf dim=1 block factor=8
-    #pragma HLS array_partition variable=ulineBuf dim=1 block factor=8    
-    #pragma HLS array_partition variable=vlineBuf dim=1 block factor=8    
+    #pragma HLS array_partition variable=ulineBuf dim=1 block factor=8
+    #pragma HLS array_partition variable=vlineBuf dim=1 block factor=8
 
     yuvdns_row:for(uint13 row = 0;row < top_register.frameHeight; row++){
         #pragma HLS LOOP_MERGE
         #pragma HLS LOOP_TRIPCOUNT max=7680 avg=1920
         yuvdns_col:for(uint13 col = 0 ;col < top_register.frameWidth; col++){
             #pragma HLS LOOP_TRIPCOUNT max=4320 avg=1080
-            #pragma HLS PIPELINE            
+            #pragma HLS PIPELINE
             y_t = src_y.read();
             u_t = src_u.read();
             v_t = src_v.read();
             if(yuvdns_reg.eb == 1){
                 out_window_loop:for(uint4 i = 0; i < 9; i++){
                     #pragma HLS unroll
-                    in_window_loop:for(uint4 j = 0; j < 8; j++){                           
+                    in_window_loop:for(uint4 j = 0; j < 8; j++){
                         yWindow[i][j] = yWindow[i][j+1];
                         uWindow[i][j] = uWindow[i][j+1];
                         vWindow[i][j] = vWindow[i][j+1];
@@ -2309,8 +2309,8 @@ void yuv444dns(top_register top_register, yuvdns_register yuvdns_reg, stream_u10
                     vlineBuf[i][col] = vlineBuf[i+1][col];
                 }
                     ylineBuf[7][col] = y_t;
-                    ulineBuf[7][col] = u_t;     
-                    vlineBuf[7][col] = v_t;     
+                    ulineBuf[7][col] = u_t;
+                    vlineBuf[7][col] = v_t;
 
                 yuvdns:if((row > 7) && (col > 7)){
                     y_dst_t = yuvdns_nlm(yWindow,yuvdns_reg.ysigma2,yuvdns_reg.yH2,yuvdns_reg.yinvH2);

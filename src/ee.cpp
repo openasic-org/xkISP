@@ -44,7 +44,7 @@ uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
     ee_pixel_t center;
 
    //prepare
-    for(k = 0;k < 5 ;k++)
+    eeprocess_label0:for(k = 0;k < 5 ;k++)
     {
         for(l = 0;l < 5 ;l++)
         {
@@ -66,7 +66,7 @@ uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
     center.b = ee_block[2][2] & 0xfff;
 
     //process r
-    for(k = 0; k < 5; k++) {
+    eeprocess_label1:for(k = 0; k < 5; k++) {
         for (l = 0; l < 4; l++) {
 
             feq_l[l] = rblock[l][k]/2 + rblock[l + 1][k]/2;
@@ -91,7 +91,7 @@ uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
 
     }
 
-    for(k = 0; k < 4; k++) {
+    eeprocess_label2:for(k = 0; k < 4; k++) {
 
         feq_l[k] = result_v[k]/2 + result_v[k+1]/2;
         feq_h[k] = result_v[k]/2 - result_v[k+1]/2;
@@ -114,7 +114,7 @@ uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
 
 
     //process g
-    for(k = 0; k < 5; k++) {
+    eeprocess_label3:for(k = 0; k < 5; k++) {
         for (l = 0; l < 4; l++) {
 
             feq_l[l] = gblock[l][k]/2 + gblock[l + 1][k]/2;
@@ -139,7 +139,7 @@ uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
 
     }
 
-    for(k = 0; k < 4; k++) {
+    eeprocess_label4:for(k = 0; k < 4; k++) {
 
         feq_l[k] = result_v[k]/2 + result_v[k+1]/2;
         feq_h[k] = result_v[k]/2 - result_v[k+1]/2;
@@ -163,7 +163,7 @@ uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
 
 
     //process b
-    for(k = 0; k < 5; k++) {
+    eeprocess_label5:for(k = 0; k < 5; k++) {
         for (l = 0; l < 4; l++) {
 
             feq_l[l] = bblock[l][k]/2 + bblock[l + 1][k]/2;
@@ -188,7 +188,7 @@ uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
 
     }
 
-    for(k = 0; k < 4; k++) {
+    eeprocess_label6:for(k = 0; k < 4; k++) {
 
         feq_l[k] = result_v[k]/2 + result_v[k+1]/2;
         feq_h[k] = result_v[k]/2 - result_v[k+1]/2;
@@ -229,77 +229,74 @@ uint36 eeprocess(uint36 ee_block[5][5], ee_register& ee_top)
 }
 
 
-void edgeenhancement(top_register& isp_top, ee_register& ee_top, stream_u36& src, stream_u36& dst)
+void edgeenhancement(top_register& top_reg, ee_register& ee_reg, stream_u36& src, stream_u36& dst)
 {
     uint36 src_in,dst_out;
     uint36 ee_block[5][5];
     uint36 ee_lines[4][8192];
-    uint13 i = 0,j = 0,count = 0;
-    uint3  k,l;
+
 
 
     uint26 n;
-    single_loop:for(n = 0;n < isp_top.frameHeight * isp_top.frameWidth;n++){
-        if(count == isp_top.frameWidth)
-        {
-            count = 0;
-            i++;
-        }
+    ee_row:for(uint13 row =0;row<top_reg.frameHeight;row++){
+    	ee_col:for(uint13 col=0;col<top_reg.frameWidth;col++){
+             src_in = src.read();
+        if(ee_reg.eb==1){
+        	block_refresh_loop_in:for(uint3 l = 0;l < 4;l++){
+             ee_block[0][l] = ee_block[0][l+1];
+             ee_block[1][l] = ee_block[1][l+1];
+             ee_block[2][l] = ee_block[2][l+1];
+             ee_block[3][l] = ee_block[3][l+1];
+             ee_block[4][l] = ee_block[4][l+1];
+               }
+        	ee_block[0][4] = ee_lines[0][col];
+            ee_block[1][4] = ee_lines[1][col];
+            ee_block[2][4] = ee_lines[2][col];
+            ee_block[3][4] = ee_lines[3][col];
 
-        count++;
-        j = n - i * isp_top.frameWidth;
+            ee_block[4][4] = src_in;
 
-        src_in = src.read();
 
-        block_refresh_loop_out:for(k = 0;k < 5;k++){
-            block_refresh_loop_in:for(l = 0;l < 4;l++){
-                ee_block[k][l] = ee_block[k][l+1];
-            }
-        }
+            ee_lines[0][col] = ee_block[1][4];
+            ee_lines[1][col] = ee_block[2][4];
+            ee_lines[2][col] = ee_block[3][4];
+            ee_lines[3][col] = src_in;
 
-        for(k = 0;k < 4;k++){
-            ee_block[k][4] = ee_lines[k][j];
-        }
-        ee_block[4][4] = src_in;
-
-        for(k = 0;k < 4;k++){
-            ee_lines[k][j] = ee_block[k+1][4];
-        }
-
-        if(ee_top.eb)
-        {
-            if((i > 3) && (j > 3))
+        	if((row > 3) && (col > 3))
             {
-                dst_out = eeprocess(ee_block, ee_top);
+                dst_out = eeprocess(ee_block, ee_reg);
             }
             else
             {
                 dst_out = ee_block[2][2];
             }
 
-            if((i > 2) || ((i == 2) && (j >= 2)))
+            if((row > 2) || ((row == 2) && (col >= 2)))
             {
                 dst.write(dst_out);
             }
         }
+
         else
         {
             dst_out = src_in;
             dst.write(dst_out);
         }
     }
-
-   if(ee_top.eb)
+    }
+   if(ee_reg.eb)
    {
-       padding_loop_1:for(k = 0;k < 2;k++){
-           dst_out = ee_lines[1][isp_top.frameWidth - 2 + k];
+       padding_loop_1:for(uint3 k = 0;k < 2;k++){
+           dst_out = ee_block[2][k+3];
            dst.write(dst_out);
        }
 
-       padding_loop_2:for(k = 0;k < 2;k++){
-           padding_loop_3:for(i = 0;i < isp_top.frameWidth;i++){
-               dst.write(ee_lines[k+2][i]);
+       padding_loop_2:for(uint3 k = 0;k < 2;k++){
+           padding_loop_3:for(uint13 i = 0;i < top_reg.frameWidth;i++){
+        	   dst_out = ee_lines[k+2][i];
+               dst.write(dst_out);
            }
        }
    }
+
 }

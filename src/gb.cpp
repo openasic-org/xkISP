@@ -226,7 +226,7 @@ void greenbalance2(top_register top_reg, gb_register gb_reg, stream_u12& src, st
             pixel_out = pixel_in;
             dst.write(pixel_out);
         }
-	
+
             #ifdef DEBUG
             if((row == ROW_TEST + 3) && (col == COL_TEST + 3)) {
                 printf("\t%x\t%x\n",row.to_int(),col.to_int());
@@ -239,8 +239,7 @@ void greenbalance2(top_register top_reg, gb_register gb_reg, stream_u12& src, st
                 printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[6][0].to_int(),gb_block[6][1].to_int(),gb_block[6][2].to_int(),gb_block[6][3].to_int(),gb_block[6][4].to_int(),gb_block[6][5].to_int(),gb_block[6][6].to_int());
                 printf("\t%x\t%x\n",pixel_in.to_int(), pixel_out.to_int());
             }
-                #endif
-		
+            #endif
     }
 }
 

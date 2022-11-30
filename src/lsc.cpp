@@ -150,7 +150,7 @@ void lsc(top_register topRegister, lsc_register &lscRegister, stream_u12 &src, s
                     printf("\t block_width_1 = %d", block_width_1.to_int());
                     printf("\t block_height_1 = %d", block_height_1.to_int());
                     printf("\t dst_value = %d", dst_value.to_int());
-		}
+                }
                 #endif
 
                 //update

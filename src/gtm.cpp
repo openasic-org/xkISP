@@ -33,7 +33,7 @@ void gtm(top_register top_reg, gtm_register gtm_reg, stream_u42 &src, stream_u42
             src_w[1] = (src_t >> 14) & 0x3fff;
             src_w[2] = src_t & 0x3fff;
             bool y0 = y & 0x1;
-            
+
             if(gtm_reg.eb == 1) {
                 gtm_cal: for (int k=0; k<3; k++) {
                     index = src_w[k] >> 7;

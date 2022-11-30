@@ -5,12 +5,12 @@
 
 
 uint16 ltm_abs(uint16 a, uint16 b){
-	uint16 dif;
-	if(a > b)
-		dif = a-b;
-	else
-		dif = b-a;
-	return dif;
+    uint16 dif;
+    if(a > b)
+        dif = a-b;
+    else
+        dif = b-a;
+    return dif;
 }
 
 uint14 ltm_clip(uint16 a,uint16 upper,uint16 lower) {
@@ -33,7 +33,7 @@ void bilaterS(ltm_register ltm_reg, uint16 rWindow[9][9],uint16 gWindow[9][9],ui
     int32 l_center=0;
     int32 logl_c=0;
     
-    uint32 pos_kerTab[9][9]={{0, 0, 0,  0,   0,   0,   0,  0, 0},
+    uint32 pos_kerTab[9][9] = {{0, 0, 0,  0,   0,   0,   0,  0, 0},
                                {0, 0, 2,  14,  26,  14,  2,  0, 0},
                                {0, 2, 45, 246, 432, 246, 45, 2, 0},
                                {0, 14,246,1331,2335,1331,246,14,0},
@@ -224,5 +224,4 @@ if(ltm_reg.m_nEb == 1){
 
 
 
-void ltm(top_register top_reg,ltm_register ltm_reg,stream_u42 &src,stream_u42 &dst);
 

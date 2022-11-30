@@ -7,7 +7,6 @@ int main(int argc, char** argv)
     stream_u42 src;
     stream_u42 dst;
 
-    
     int x;
     uint14 red;
     uint14 green;
@@ -17,7 +16,6 @@ int main(int argc, char** argv)
     uint14 blue_o;
     uint42 srcdata;
     uint42 dstdata;
-    
 
     printf("\tTest for ISP ltm module!\n");
     memset(&topParam, 0, sizeof(top_register));
@@ -40,11 +38,11 @@ int main(int argc, char** argv)
     }
 
     for (x = 0; x < topParam.frameWidth*topParam.frameHeight; x++) {
-    	fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
+        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
         red = (uint14)frameIn[x];
-    	fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
+        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
         green = (uint14)frameIn[x];
-    	fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
+        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
         blue = (uint14)frameIn[x];
        // printf("red:%d,green:%d,blue:%d\n",red.to_int(),green.to_int(),blue.to_int());
         srcdata(41,28) = red;
@@ -103,7 +101,6 @@ int main(int argc, char** argv)
     fclose(fp_g1);
     fclose(fp_w1);
 
-    
     free(frameIn);
     free(frameGolden);
     free(frameOut);

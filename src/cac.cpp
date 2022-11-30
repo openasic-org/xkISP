@@ -29,11 +29,24 @@ int18 cac_min(int a, int b) {
     return result;
 }
 
+int18 abs(int a, int b) {
+    int18 result;
+    if(a >= b)
+        result = a - b;
+    else
+        result = b - a;
+    return result;
+}
+
 void cac(top_register top_reg, cac_register cac_reg, stream_u42 &src, stream_u42 &dst) {
     uint42 src_t;
     uint42 dst_t;
     uint42 rgbWindow[7][7];
+    uint14 storeWindow_r[7][7];
+    uint14 storeWindow_b[7][7];
     uint42 lineBuffer[6][8192];
+    uint14 storeBuffer_r[6][8192];
+    uint14 storeBuffer_b[6][8192];
     int17 r_edge_h[5]; // the fourth row horizontal sobel edge detection value of r channel
     int17 g_edge_h[5];
     int17 b_edge_h[5];
@@ -55,6 +68,22 @@ void cac(top_register top_reg, cac_register cac_reg, stream_u42 &src, stream_u42
             src_t = src.read();
 
             if(cac_reg.eb == 1) {
+
+                storeWindow_shift_row: for (uint3 i = 0; i < 7; i++) {
+                    storeWindow_shift_col: for (uint3 j = 0; j < 6; j++) {
+                        storeWindow_r[i][j] = storeWindow_r[i][j+1];
+                        storeWindow_b[i][j] = storeWindow_b[i][j+1];
+                    }
+                }
+
+                storeWindow_in: for (uint3 i = 0; i < 6; i++) {
+                    storeWindow_r[i][6] = storeBuffer_r[i][col];
+                    storeWindow_b[i][6] = storeBuffer_b[i][col];
+                }
+
+                storeWindow_r[6][6] = src_t(41, 28);
+                storeWindow_b[6][6] = src_t(13, 0);
+
                 // loading rgbWindow in the first six col
                 rgbWindow_loop: for(uint3 i = 0; i < 7; i++) {
                     rgbWindow_loop_j: for(uint3 j = 0; j < 6; j ++) {
@@ -63,14 +92,21 @@ void cac(top_register top_reg, cac_register cac_reg, stream_u42 &src, stream_u42
                 }
 
                 // loading linebuffer to rgbWindow
+                
                 rgbWindow_read: for(uint3 i = 0; i < 6; i++) {
                     rgbWindow[i][6] = lineBuffer[i][col];
                 }
 
                 rgbWindow[6][6] = src_t;
 
+                linebuffer_read: for(uint3 i = 0; i < 5; i++) {
+                    lineBuffer[i][col] = rgbWindow[i + 1][6];
+                }
+
+                lineBuffer[5][col] = src_t;
+
                 if((row > 5) || ((row == 5) && (col > 2))){
-                    if((row > 5) && (col > 5)) {
+                    if((row > 7) && (col > 7) && (col < top_reg.frameWidth - 2) && (row < top_reg.frameHeight - 2)) {
                         // divide rgbWindow to r, g, b channel
                         pixel_temp_row: for(uint3 i = 0; i < 7; i++) {
                             pixel_temp_col: for(uint3 j = 0; j < 7; j++) {
@@ -275,8 +311,82 @@ void cac(top_register top_reg, cac_register cac_reg, stream_u42 &src, stream_u42
                             }
                             #endif
                         }
+                            #ifdef DEBUG
+                            if(row == ROW_TEST + 5 && col == COL_TEST + 3) {
+                                printf("inPixel_int[1][3].r=%d\n", inPixel_int[1][3].r.to_int());
+                                printf("inPixel_int[1][3].b=%d\n", inPixel_int[1][3].b.to_int());
+                                printf("window.r=%d\n", rgbWindow[1][3](41,28).to_int());
+                                printf("window.b=%d\n", rgbWindow[1][3](13,0).to_int());
+                                printf("storeWindow_r[1][3]=%d\n", storeWindow_r[1][3].to_int());
+                                printf("storeWindow_b[1][3]=%d\n", storeWindow_b[1][3].to_int());
+                            }
+                            #endif
+                        #ifdef DEBUG
+                        if(row == ROW_TEST + 5 && col == COL_TEST + 3) {
+                            printf("inPixel_int[2][3].r=%d\n", inPixel_int[3][3].r.to_int());
+                            printf("inPixel_int[2][3].b=%d\n", inPixel_int[3][3].b.to_int());
+                            printf("window.r=%d\n", rgbWindow[3][3](41,28).to_int());
+                            printf("window.b=%d\n", rgbWindow[3][3](13,0).to_int());
+                            printf("storeWindow_r[2][3]=%d\n", storeWindow_r[3][3].to_int());
+                            printf("storeWindow_b[2][3]=%d\n", storeWindow_b[3][3].to_int());
+                        }
+                        #endif
+                            
+                        storeWindow_loop: for(uint3 i = 1; i < 6; i++) {
+                            if(abs(rgbWindow[3][i](41, 28), cac_clip(inPixel_int[3][i].r, 0, 16383)) >= abs(storeWindow_r[3][i], rgbWindow[3][i](41, 28))) {
+                                storeWindow_r[3][i] = cac_clip(inPixel_int[3][i].r, 0, 16383);
+                            }
+                            else {
+                                storeWindow_r[3][i] = cac_clip(storeWindow_r[3][i], 0, 16383);
+                            }
+
+                            if(abs(rgbWindow[3][i](13, 0), cac_clip(inPixel_int[3][i].b, 0, 16383)) >= abs(storeWindow_b[3][i], rgbWindow[3][i](13, 0))) {
+                                storeWindow_b[3][i] =  cac_clip(inPixel_int[3][i].b, 0, 16383);
+                            }
+                            else {
+                                storeWindow_b[3][i] = cac_clip(storeWindow_b[3][i], 0, 16383);
+                            }
+
+                            if(abs(rgbWindow[i][3](41, 28), cac_clip(inPixel_int[i][3].r, 0, 16383)) >= abs(storeWindow_r[i][3], rgbWindow[i][3](41, 28))) {
+                                storeWindow_r[i][3] =  cac_clip(inPixel_int[i][3].r, 0, 16383);
+                            }
+                            else {
+                                storeWindow_r[i][3] = cac_clip(storeWindow_r[i][3], 0, 16383);
+                            }
+
+                            if(abs(rgbWindow[i][3](13, 0), cac_clip(inPixel_int[i][3].b, 0, 16383)) >= abs(storeWindow_b[i][3], rgbWindow[i][3](13, 0))) {
+                                storeWindow_b[i][3] = cac_clip(inPixel_int[i][3].b, 0, 16383);
+                            }
+                            else {
+                                storeWindow_b[i][3] = cac_clip(storeWindow_b[i][3], 0, 16383);
+                            }
+                        }
+                        #ifdef DEBUG
+                        if(row == ROW_TEST + 5 && col == COL_TEST + 3) {
+                            printf("dst_t.r=%d\n", storeWindow_r[1][3].to_int());
+                            printf("dst_t.b=%d\n", storeWindow_b[1][3].to_int());
+                            printf("return.r=%d\n", storeWindow_r[2][0].to_int());
+                            printf("return.b=%d\n", storeWindow_b[2][0].to_int());
+                            //printf("storeWindow_r[2][3]=%d\n", storeWindow_r[2][3].to_int());
+                            //printf("storeWindow_b[2][3]=%d\n", storeWindow_b[2][3].to_int());
+                            printf("storeWindow_r[2][3]=%d\n", storeWindow_r[2][3].to_int());
+                            printf("storeWindow_b[2][3]=%d\n", storeWindow_b[2][3].to_int());
+                        }
+                        #endif
+
 
                         // output the inPixel[1][3]
+                        #ifdef vivado
+                        dst_t(41,28) = uint14(cac_clip(storeWindow_r[1][3], 0, 16383));
+                        dst_t(27,14) = uint14(cac_clip(inPixel_int[1][3].g, 0, 16383));
+                        dst_t(13,0) = uint14(cac_clip(storeWindow_b[1][3], 0, 16383));
+                        #endif
+                        #ifdef catapult
+                        dst_t.set_slc(28,uint14(cac_clip(inPixel_int[1][3].r, 0, 16383)));
+                        dst_t.set_slc(14,uint14(cac_clip(inPixel_int[1][3].g, 0, 16383)));
+                        dst_t.set_slc(0,uint14(cac_clip(inPixel_int[1][3].b, 0, 16383)));
+                        #endif
+                         /*
                         #ifdef vivado
                         dst_t(41,28) = uint14(cac_clip(inPixel_int[1][3].r, 0, 16383));
                         dst_t(27,14) = uint14(cac_clip(inPixel_int[1][3].g, 0, 16383));
@@ -287,8 +397,9 @@ void cac(top_register top_reg, cac_register cac_reg, stream_u42 &src, stream_u42
                         dst_t.set_slc(14,uint14(cac_clip(inPixel_int[1][3].g, 0, 16383)));
                         dst_t.set_slc(0,uint14(cac_clip(inPixel_int[1][3].b, 0, 16383)));
                         #endif
-
+                        */
                         // write back the pixels to rgbWindow, only for the third row and the third column
+                        /*
                         window_return_row: for(uint4 j = 1; j < 6; j++) {
                             #ifdef vivado
                             rgbWindow[3][j](41,28) = uint14(cac_clip(inPixel_int[3][j].r, 0, 16383));
@@ -306,7 +417,7 @@ void cac(top_register top_reg, cac_register cac_reg, stream_u42 &src, stream_u42
                             rgbWindow[j][3].set_slc(14, uint14(cac_clip(inPixel_int[j][3].g, 0, 16383)));
                             rgbWindow[j][3].set_slc(0, uint14(cac_clip(inPixel_int[j][3].b, 0, 16383)));
                             #endif
-                        }
+                        }*/
                     }
                     else {
                         dst_t = rgbWindow[1][3];
@@ -315,20 +426,39 @@ void cac(top_register top_reg, cac_register cac_reg, stream_u42 &src, stream_u42
                 }
 
                 // write back to the pixels to the linebuffer
-                lineBuffer_write: for(uint4 i = 0; i < 6; i++) {
+                /*
+                storeBuffer_write: for(uint4 i = 0; i < 6; i++) {
                     // before correction cycles, write back the final column
-                    if(row <= 5 || ((row == 6) && (col < 6))) {
-                        lineBuffer[i][col] = rgbWindow[i+1][6];
+                    if(row <= 7 || ((row == 8) && (col < 8))) {
+                        storeBuffer_r[i][col] = rgbWindow[i+1][6](41, 28);
+                        storeBuffer_b[i][col] = rgbWindow[i+1][6](13, 0);
                     }
                     // correction cycles, write back the first column
-                    else if(col >= 6) {
-                        lineBuffer[i][col - 6] = rgbWindow[i+1][0];
+                    else if(col >= 8) {
+                        storeBuffer_r[i][col - 6] = storeWindow_r[i+1][0];
+                        storeBuffer_b[i][col - 6] = storeWindow_b[i+1][0];
                     }
                     else {
-                        lineBuffer[i][top_reg.frameWidth + col - 6] = rgbWindow[i+1][0];
+                        storeBuffer_r[i][top_reg.frameWidth + col - 6] = storeWindow_r[i+1][0];
+                        storeBuffer_b[i][top_reg.frameWidth + col - 6] = storeWindow_b[i+1][0];
+                    }
+                }*/
+                
+                storeBuffer_write: for(uint4 i = 0; i < 6; i++) {
+                    // before correction cycles, write back the final column
+                    if(row <= 5 || ((row == 6) && (col < 6))) {
+                        storeBuffer_r[i][col] = storeWindow_r[i+1][6];
+                        storeBuffer_b[i][col] = storeWindow_b[i+1][6];
+                    }
+                    else if(col >= 6) {
+                        storeBuffer_r[i][col - 6] = storeWindow_r[i+1][0];
+                        storeBuffer_b[i][col - 6] = storeWindow_b[i+1][0];
+                    }
+                    else {
+                        storeBuffer_r[i][top_reg.frameWidth + col - 6] = storeWindow_r[i+1][0];
+                        storeBuffer_b[i][top_reg.frameWidth + col - 6] = storeWindow_b[i+1][0];
                     }
                 }
-
             }
             else {
                 dst.write(src_t);
@@ -337,18 +467,16 @@ void cac(top_register top_reg, cac_register cac_reg, stream_u42 &src, stream_u42
     }
 
     // padding processing
+    
     if(cac_reg.eb == 1) {
         addon_loop_1: for (uint4 cnt = 0; cnt < 3; cnt++){
-            dst.write(rgbWindow[1][4+cnt]);
+        	dst_t=rgbWindow[1][4+cnt];
+            dst.write(dst_t);
         }
-        addon_loop_2: for (uint3 i = 0; i < 5; i++) {
+        addon_loop_2: for (uint3 i = 1; i < 6; i++) {
             for(uint14 j = 0; j < top_reg.frameWidth; j++) {
-                if(j < top_reg.frameWidth - 6) {
-                    dst.write(lineBuffer[i+1][j]);
-                }
-                else {
-                    dst.write(rgbWindow[i+2][7+j-top_reg.frameWidth]);
-                }
+            	dst_t=lineBuffer[i][j];
+                dst.write(dst_t);
             }
         }
     }

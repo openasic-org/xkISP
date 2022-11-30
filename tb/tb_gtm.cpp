@@ -65,11 +65,11 @@ int main(int argc, char** argv)
     }
 
     for (x = 0; x < topParam.frameWidth*topParam.frameHeight; x++) {
-    	fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
+        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
         red = (uint14)frameIn[x];
-    	fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
+        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
         green = (uint14)frameIn[x];
-    	fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
+        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
         blue = (uint14)frameIn[x];
         srcdata(41,28) = red;
         srcdata(27,14) = green;
@@ -137,11 +137,11 @@ int main(int argc, char** argv)
     }
 
     for (x = 0; x < topParam.frameWidth*topParam.frameHeight; x++) {
-    	fread(&frameIn[x], sizeof(uint16_t), 1, fp_r2);
+        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r2);
         red = (uint14)frameIn[x];
-    	fread(&frameIn[x], sizeof(uint16_t), 1, fp_r2);
+        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r2);
         green = (uint14)frameIn[x];
-    	fread(&frameIn[x], sizeof(uint16_t), 1, fp_r2);
+        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r2);
         blue = (uint14)frameIn[x];
         srcdata(41,28) = red;
         srcdata(27,14) = green;

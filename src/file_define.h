@@ -30,7 +30,7 @@
 #define GB_DST1 "../../../../../tv/gb_hls.raw"
 #define GB_GOLDEN1 "../../../../../tv/gb_out.raw"
 //Demosaic
-#define DEMOSAIC_SRC1 "../../../../../tv/gb_out.raw" 
+#define DEMOSAIC_SRC1 "../../../../../tv/gb_out.raw"
 #define DEMOSAIC_DST1 "../../../../../tv/demosaic_hls.rgbh"
 #define DEMOSAIC_GOLDEN1 "../../../../../tv/demosaic_out.rgbh"
 //EE
@@ -47,8 +47,14 @@
 #define GTM_SRC1 "../../../../../tv/cmc_out.rgb"
 #define GTM_DST1 "../../../../../tv/gtm_hls.rgb"
 #define GTM_GOLDEN1 "../../../../../tv/gtm_out.rgb"
+//LUT
+#define LUT_SRC1 "../../../../../tv/gtm_out.rgb"
+#define LUT_DST1 "../../../../../tv/lut_hls.rgb"
+#define LUT_GOLDEN1 "../../../../../tv/lut_out.rgb"
+#define LUT_CUBE "../../../../../tv/integer.cube"
+#define LUT_CUBE_17 "../../../../../tv/integer_17.cube"
 //LTM
-#define LTM_SRC1    "../../../../../tv/gtm_out.rgb"
+#define LTM_SRC1    "../../../../../tv/gtm_out.rgb" //tmp
 #define LTM_DST1    "../../../../../tv/ltm_hls.rgb"
 #define LTM_GOLDEN1 "../../../../../tv/ltm_out.rgb"
 //CAC

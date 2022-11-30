@@ -37,11 +37,11 @@ int main(int argc, char** argv)
     }
 
     for (x = 0; x < top_param.frameWidth*top_param.frameHeight; x++) {
-    	fread(&frameIn[3 * x], sizeof(uint16_t), 1, fp_r1);
+        fread(&frameIn[3 * x], sizeof(uint16_t), 1, fp_r1);
         red = (uint14)frameIn[3 * x];
-    	fread(&frameIn[3 * x + 1], sizeof(uint16_t), 1, fp_r1);
+        fread(&frameIn[3 * x + 1], sizeof(uint16_t), 1, fp_r1);
         green = (uint14)frameIn[3 * x + 1];
-    	fread(&frameIn[3 * x + 2], sizeof(uint16_t), 1, fp_r1);
+        fread(&frameIn[3 * x + 2], sizeof(uint16_t), 1, fp_r1);
         blue = (uint14)frameIn[3 * x + 2];
         srcdata(41,28) = red;
         srcdata(27,14) = green;

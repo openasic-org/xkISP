@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     top_param.frameWidth = 640;
     top_param.frameHeight = 480;
     top_param.imgPattern = 3;
-    
+
     dpc_param.eb = 1;
     dpc_param.th_w = 300;
     dpc_param.th_b = 300;
@@ -23,7 +23,6 @@ int main(int argc, char** argv)
     uint16_t* frameGolden = (uint16_t*)malloc(top_param.frameWidth * top_param.frameHeight * sizeof(uint16_t));
     uint16_t* frameOut = (uint16_t*)malloc(top_param.frameWidth * top_param.frameHeight * sizeof(uint16_t));
 
-   
     //In
     FILE *fp_r1 = fopen(DPC_SRC1, "r");
     if(!fp_r1){
@@ -68,8 +67,8 @@ int main(int argc, char** argv)
 
     //Checker
     for (x = 0; x < top_param.frameWidth*top_param.frameHeight; x++) {
-    	int tmp = frameGolden[x] - frameOut[x];
-    	if(tmp != 0) {
+        int tmp = frameGolden[x] - frameOut[x];
+        if(tmp != 0) {
             printf("\t\tFirst mismatch in pixel %d!\n", x);
             printf("\t\tGolden = %d, result = %d!\n", frameGolden[x], frameOut[x]);
             exit(0);

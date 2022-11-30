@@ -7,7 +7,7 @@ int main(int argc, char** argv)
     hls::stream<uint30> src;
     hls::stream<uint10> y_dst;
     hls::stream<uint10> u_dst;
-    hls::stream<uint10> v_dst; 
+    hls::stream<uint10> v_dst;
     int x;
     uint30 srcdata;
     uint10 y_in_data;
@@ -22,7 +22,6 @@ int main(int argc, char** argv)
     memset(&yfc_param, 0, sizeof(yfc_register));
     topParam.frameWidth = 640;
     topParam.frameHeight = 480;
-    
 
     uint16_t* frameIn = (uint16_t*)malloc(3 * topParam.frameWidth * topParam.frameHeight * sizeof(uint16_t));
     uint16_t* frameGolden_1 = (uint16_t*)malloc(3 * topParam.frameWidth * topParam.frameHeight * sizeof(uint16_t));

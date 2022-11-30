@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 
     memset(&topParam, 0, sizeof(top_register));
     memset(&rawdnsParam, 0, sizeof(rawdns_register));
-    
+
     topParam.frameWidth = 640;
     topParam.frameHeight = 480;
 
@@ -25,8 +25,6 @@ int main(int argc, char* argv[])
 
     uint12 src_in ;
     uint12 dst_out;
-    
-    //the 1928*1088 phase
 
     FILE* fp4 = fopen(RAWDNS_SRC1, "r");
     if (fp4 == NULL)
@@ -56,21 +54,21 @@ int main(int argc, char* argv[])
     }
     fclose(fp5);
 
-    //execution and write out 
+    //execution and write out
     isp_rawdns(topParam, rawdnsParam, src, dst);
-    
+
     FILE* fp6 = fopen(RAWDNS_DST1, "w");
     if (fp6 == NULL)
     {
         printf("DST file open failed!\n");
         return false;
     }
-    
+
     for (int i = 0; i < topParam.frameWidth * topParam.frameHeight; i++) {
         dst>>dst_out;
         frame_out[i] = dst_out;
     }
-    
+
     fwrite(frame_out,sizeof(uint16_t),topParam.frameWidth * topParam.frameHeight,fp6);
     fclose(fp6);
 
@@ -78,7 +76,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < topParam.frameWidth * topParam.frameHeight; i++) {
         uint16_t golden_pixel = golden_in[i];
         uint16_t dst_pixel = frame_out[i];
-        
+
         if (golden_pixel != dst_pixel)
         {
             cout << "Golden = " << setbase(10) << golden_in[i] << endl;

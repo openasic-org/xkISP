@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     }
 
     for (x = 0; x < topParam.frameWidth*topParam.frameHeight; x++) {
-    	fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
+        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
         uint12 srcdata = (uint12)frameIn[x];
         src << srcdata;
     }

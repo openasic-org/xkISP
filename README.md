@@ -1,5 +1,5 @@
 # Introduction
-xkISP is an open source image signal processor (ISP) based on Xilinx development tools. 
+xkISP is an open source image signal processor (ISP) based on Xilinx development tools.
 xkISP is jointly developed by VIP Lab of Fudan university and DAMO CTL lab of Alibaba.
 Up to now, xkISP supports to process 12-bit raw image data of any resolution. The entire pipeline includes 17 function modules  shown in the following:
 The official on-line forum of xkISP project is: http://openasic.org/
@@ -16,24 +16,24 @@ openISP
 │      top.h
 │      xcl2.cpp
 │      xcl2.h
-│     
+│
 ├─src
 │    isp_top.h
 │    file_define.h
 │    "*module*".cpp
 │    "*module*".h
 │    ...
-│   
+│
 ├─tb
 │     tb_"*module*".cpp
 │    ...
-│   
+│
 ├─tcl
 │      Makefile
 │      "*module*".tcl
 │      "*module*"_directives.tcl
 │    ...
-│   
+│
 ├─tv
 │     Makefile
 │     hls_param.txt
@@ -82,7 +82,7 @@ For module level  verification, you can use the script `Makefile` in the  `tcl`.
 
 ## Top level integration verification
 For top level integration verification, you can use the vitis GUI. The example is shown as follows:
-1.Create a new project using the vitis. 
+1.Create a new project using the vitis.
 Import `top.h` and `top.cpp` under kernels and  `host.cpp`, `top.h`, `xcl2.cpp`, `xcl2.hpp` under host platform(x86).
 
 ![输入图片说明](imgs/1.png)
@@ -97,13 +97,13 @@ Under the kernel directory, double-click `.prj` to enter its configuration inter
 3.Set test images path and configuration parameters
 Enter the `host.cpp`
  - image path
-Modify the  "*TOP_SRC1*" and "*TOP_DST1*" to your image paths. 
+Modify the  "*TOP_SRC1*" and "*TOP_DST1*" to your image paths.
  - image resolution
-"*IMAGE_HEIGHT*" and "*IMAGE_WIDTH*" determine the input image height and witdh. 
+"*IMAGE_HEIGHT*" and "*IMAGE_WIDTH*" determine the input image height and witdh.
 "*upper_left_x*", "*upper_left_y*" , *"lower_right_x**" ,"*lower_right_y*"   determine the pixel positions of the upper left and lower right corners of the cropped image.
 "*CROP_HEIGHT*" and "*CROP_WIDTH*" determine the output image height and width. They need to be matched with  "*upper_left_x*", "*upper_left_y*" , *"lower_right_x**" ,"*lower_right_y*"
  - module configuration
- You can find them in the  `host.cpp` 
+ You can find them in the  `host.cpp`
 
 4.Compile and run
 Click the settings ![输入图片说明](imgs/6.png) in the Assistant window to select the target we compile ("*emulation-SW", "emulation-HW", "HW*")
@@ -114,5 +114,5 @@ Click the settings ![输入图片说明](imgs/6.png) in the Assistant window to 
 
 Click build ![输入图片说明](imgs/7.png) in the Assistant window to compile. Click run ![输入图片说明](imgs/8.png) to execute the project.
 
- 
+
 

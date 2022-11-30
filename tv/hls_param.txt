@@ -60,12 +60,12 @@ histeq_enable=0
 gtm_enable=1
 gtm_gamma=1.2
 
-#ltm
+#ltm 
 ltm_enable=1
 ltm_contrast=3401
 ltm_ratio=38
 
-#cac
+#cac 
 cac_enable=1
 cac_t_transient=7000
 cac_t_edge=4000

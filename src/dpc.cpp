@@ -91,7 +91,7 @@ void dpc(top_register top_reg, dpc_register dpc_reg, stream_u12& src, stream_u12
     bool flag;
     uint11 th_w = dpc_reg.th_w;
     uint11 th_b = dpc_reg.th_b;
-    
+
     uint12 lineBuffer[4][8192];
 
     int n_n = 0;
@@ -122,7 +122,7 @@ void dpc(top_register top_reg, dpc_register dpc_reg, stream_u12& src, stream_u12
                 if((row > 3)&&(col > 3)){
                     uint2 bayerPattern = (((row & 1) << 1) + (col & 1))^top_reg.imgPattern;
                     pixel = rawWindow[2][2];
-                    
+
                     if(bayerPattern == 0 || bayerPattern == 3){
                         arr_ori[0] = rawWindow[0][0];
                         arr_ori[1] = rawWindow[0][2];
@@ -181,7 +181,6 @@ void dpc(top_register top_reg, dpc_register dpc_reg, stream_u12& src, stream_u12
                 dstData = srcData;
             }
             if((row > 2) || ((row==2) && (col > 1))){
-                
                 dst.write(dstData);
             }
         }

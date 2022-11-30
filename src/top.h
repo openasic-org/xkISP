@@ -19,6 +19,7 @@ using namespace std;
     #include <ap_int.h>
     #include <hls_stream.h>
     typedef ap_int<2>   int2;
+    typedef ap_int<3>   int3;
     typedef ap_int<4>   int4;
     typedef ap_int<6>   int6;
     typedef ap_int<8>   int8;
@@ -59,6 +60,7 @@ using namespace std;
     typedef ap_uint<14> uint14;
     typedef ap_uint<15> uint15;
     typedef ap_uint<16> uint16;
+    typedef ap_uint<17> uint17;
     typedef ap_uint<18> uint18;
     typedef ap_uint<19> uint19;
     typedef ap_uint<20> uint20;
@@ -146,6 +148,7 @@ using namespace std;
     typedef ac_int<14,false> uint14;
     typedef ac_int<15,false> uint15;
     typedef ac_int<16,false> uint16;
+    typedef ac_int<17,false> uint17;
     typedef ac_int<18,false> uint18;
     typedef ac_int<19,false> uint19;
     typedef ac_int<20,false> uint20;
@@ -173,6 +176,7 @@ using namespace std;
     typedef ac_channel<uint42>  stream_u42;
 #endif
 
+#ifdef vivado
 typedef struct {
     uint13  frameWidth;    //13 bits
     uint13  frameHeight;   //13 bits
@@ -186,5 +190,24 @@ typedef struct {
     uint13  scalerFrameWidth;  //13 bits;
     uint13  scalerFrameHeight; //13 bits;
 } top_register;
+#endif
+
+#ifdef catapult
+typedef struct {
+    uint13  frameWidth;    //13 bits
+    uint13  frameHeight;   //13 bits
+    bool    inputFormat;   //
+    uint2   imgPattern;    //2bits 0:r 1:Gr 2:Gb 3:b
+    uint2   pipeMode;      //2bits 0:sigle 1:dual 2:hdr
+    uint9   blc;           //9bits four chn blc before stretch module
+    bool    shadowEb;      //isp reg shadow enable
+    uint13  binningFrameWidth; //13 bits
+    uint13  binningFrameHeight;  //13 bits;
+    uint13  scalerFrameWidth;  //13 bits;
+    uint13  scalerFrameHeight; //13 bits;
+    uint13  ROW_TEST;
+    uint13  COL_TEST;
+} top_register;
+#endif
 
 #endif

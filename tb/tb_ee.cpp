@@ -64,7 +64,6 @@ int main(int argc, char** argv)
     if(!fp_w1){
         printf("\tCan not open write back file!\n");
     }
-    
 
     for (x = 0; x < topParam.frameWidth*topParam.frameHeight; x++) {
         uint64_t dstdata = 0;
