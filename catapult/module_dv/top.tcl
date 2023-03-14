@@ -23,6 +23,8 @@ solution options set /Flows/VCS/VG_ENV64_SCRIPT source_me_gcc483_64.csh
 solution options set /Flows/VCS/VLOGAN_OPTS {+v2k +no_tchk_msg -kdb -lca}
 solution options set /Flows/VCS/VCSELAB_OPTS {-debug_acc+all -debug_region+cell+encrypt -timescale=1ps/1ps -sysc=blocksync -sysc=2.3.1 -sysc=slow_sc_main}
 solution options set /Flows/VCS/SYSC_VERSION 2.3.1
+solution file add ../src/afc.h -type CHEADER -exclude true
+solution file add ../src/afc.cpp -type C++
 solution file add ../src/cac.cpp -type C++
 solution file add ../src/awb.h -type CHEADER -exclude true
 solution file add ../src/awb.cpp -type C++
@@ -66,7 +68,7 @@ solution file add ../src/top.h -type CHEADER -exclude true
 solution file add ../src/yfc.cpp -type C++
 solution file add ../src/wbc.h -type CHEADER -exclude true
 solution file add ../src/tpg.h -type CHEADER -exclude true
-solution file add ../tb/tb_top_catapult.cpp -type C++ -exclude true
+solution file add ../tb/tb_top_catapult_single_tv.cpp -type C++ -exclude true
 directive set -DESIGN_GOAL area
 directive set -SPECULATE true
 directive set -MERGEABLE true
@@ -160,6 +162,8 @@ solution options set /Flows/VCS/VLOGAN_OPTS {+v2k +no_tchk_msg -kdb -lca}
 solution options set /Flows/VCS/VCSELAB_OPTS {-debug_acc+all -debug_region+cell+encrypt -timescale=1ps/1ps -sysc=blocksync -sysc=2.3.1 -sysc=slow_sc_main}
 solution options set /Flows/VCS/SYSC_VERSION 2.3.1
 flow package require /SCVerify
+solution file add ../src/afc.h -type CHEADER -exclude true
+solution file add ../src/afc.cpp -type C++
 solution file add ../src/cac.cpp -type C++
 solution file add ../src/awb.h -type CHEADER -exclude true
 solution file add ../src/awb.cpp -type C++
@@ -203,7 +207,7 @@ solution file add ../src/top.h -type CHEADER -exclude true
 solution file add ../src/yfc.cpp -type C++
 solution file add ../src/wbc.h -type CHEADER -exclude true
 solution file add ../src/tpg.h -type CHEADER -exclude true
-solution file add ../tb/tb_top_catapult.cpp -type C++ -exclude true
+solution file add ../tb/tb_top_catapult_single_tv.cpp -type C++ -exclude true
 directive set -DESIGN_GOAL area
 directive set -SPECULATE true
 directive set -MERGEABLE true
@@ -303,6 +307,8 @@ solution options set /Flows/VCS/VLOGAN_OPTS {+v2k +no_tchk_msg -kdb -lca}
 solution options set /Flows/VCS/VCSELAB_OPTS {-debug_acc+all -debug_region+cell+encrypt -timescale=1ps/1ps -sysc=blocksync -sysc=2.3.1 -sysc=slow_sc_main}
 solution options set /Flows/VCS/SYSC_VERSION 2.3.1
 flow package require /SCVerify
+solution file add ../src/afc.h -type CHEADER -exclude true
+solution file add ../src/afc.cpp -type C++
 solution file add ../src/cac.cpp -type C++
 solution file add ../src/awb.h -type CHEADER -exclude true
 solution file add ../src/awb.cpp -type C++
@@ -346,7 +352,7 @@ solution file add ../src/top.h -type CHEADER -exclude true
 solution file add ../src/yfc.cpp -type C++
 solution file add ../src/wbc.h -type CHEADER -exclude true
 solution file add ../src/tpg.h -type CHEADER -exclude true
-solution file add ../tb/tb_top_catapult.cpp -type C++ -exclude true
+solution file add ../tb/tb_top_catapult_single_tv.cpp -type C++ -exclude true
 directive set -PIPELINE_RAMP_UP true
 directive set -PROTOTYPING_ENGINE oasys
 directive set -CLUSTER_TYPE combinational
@@ -460,6 +466,8 @@ solution options set /Flows/VCS/VLOGAN_OPTS {+v2k +no_tchk_msg -kdb -lca}
 solution options set /Flows/VCS/VCSELAB_OPTS {-debug_acc+all -debug_region+cell+encrypt -timescale=1ps/1ps -sysc=blocksync -sysc=2.3.1 -sysc=slow_sc_main}
 solution options set /Flows/VCS/SYSC_VERSION 2.3.1
 flow package require /SCVerify
+solution file add ../src/afc.h -type CHEADER -exclude true
+solution file add ../src/afc.cpp -type C++
 solution file add ../src/cac.cpp -type C++
 solution file add ../src/awb.h -type CHEADER -exclude true
 solution file add ../src/awb.cpp -type C++
@@ -503,7 +511,7 @@ solution file add ../src/top.h -type CHEADER -exclude true
 solution file add ../src/yfc.cpp -type C++
 solution file add ../src/wbc.h -type CHEADER -exclude true
 solution file add ../src/tpg.h -type CHEADER -exclude true
-solution file add ../tb/tb_top_catapult.cpp -type C++ -exclude true
+solution file add ../tb/tb_top_catapult_single_tv.cpp -type C++ -exclude true
 directive set -PIPELINE_RAMP_UP true
 directive set -PROTOTYPING_ENGINE oasys
 directive set -CLUSTER_TYPE combinational
@@ -597,6 +605,7 @@ solution design set isp_top -top
 solution design set yuv444dns -block
 solution design set tpg -block
 solution design set yfc -block
+solution design set afc -block
 solution design set yuvdns_nlm -block -ccore
 solution design set bilaterS -block
 go compile
@@ -613,6 +622,41 @@ directive set /isp_top/rawdns_process -MAP_TO_MODULE {[CCORE] rawdns_process.v1}
 directive set /isp_top/yuvdns_nlm -MAP_TO_MODULE {[CCORE] yuvdns_nlm.v1}
 directive set /isp_top/bilaterS -MAP_TO_MODULE {[CCORE] bilaterS.v1}
 go assembly
+directive set /isp_top/afc/top_reg.frameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/top_reg.frameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/top_reg.inputFormat:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/top_reg.imgPattern:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/top_reg.pipeMode:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/top_reg.blc:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/top_reg.shadowEb:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/afc_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/afc_reg.location_row:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/afc_reg.location_col:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/afc_reg.m_bIfHardThreshold:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/afc_reg.ThrList:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/afc_reg.T:rsc -MAP_TO_MODULE {[DirectInput]}
+directive set /isp_top/afc/core/lineBuffer:rsc -BLOCK_SIZE 8192
+directive set /isp_top/afc/core/rawWindow:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/afc/core/raw_int:rsc -MAP_TO_MODULE {[Register]}
+directive set /isp_top/afc/core/main -PIPELINE_INIT_INTERVAL 1
+directive set /isp_top/afc/core/rawWin_loop -UNROLL yes
+directive set /isp_top/afc/core/rawWindow_read -UNROLL yes
+directive set /isp_top/afc/core/line_write -UNROLL yes
+directive set /isp_top/afc/core/raw_int_read_row -UNROLL yes
+directive set /isp_top/afc/core/raw_int_read_col -UNROLL yes
+directive set /isp_top/afc/core/loop_sobel_1 -UNROLL yes
+directive set /isp_top/afc/core/loop_sobel_2 -UNROLL yes
+directive set /isp_top/afc/core/loop_laplace_1 -UNROLL yes
+directive set /isp_top/afc/core/loop_laplace_2 -UNROLL yes
+directive set /isp_top/afc/core/loop_H5_1 -UNROLL yes
+directive set /isp_top/afc/core/loop_H5_2 -UNROLL yes
+directive set /isp_top/afc/core/loop_IIRH1 -UNROLL yes
+directive set /isp_top/afc/core/loop_IIRH2_1 -UNROLL yes
+directive set /isp_top/afc/core/loop_IIRH2_2 -UNROLL yes
 directive set /isp_top/dpc/top_reg.frameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dpc/top_reg.frameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dpc/top_reg.inputFormat:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -624,8 +668,6 @@ directive set /isp_top/dpc/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/dpc/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dpc/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dpc/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/dpc/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/dpc/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dpc/dpc_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dpc/dpc_reg.th_w:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dpc/dpc_reg.th_b:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -658,8 +700,6 @@ directive set /isp_top/tpg/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/tpg/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/tpg/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/tpg/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/tpg/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/tpg/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/tpg/tpg_reg.m_bTPG_en:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/tpg/tpg_reg.m_nWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/tpg/tpg_reg.m_nHeight:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -682,8 +722,6 @@ directive set /isp_top/dgain/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Dire
 directive set /isp_top/dgain/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dgain/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dgain/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/dgain/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/dgain/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dgain/dgain_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dgain/dgain_reg.m_nBlcR:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/dgain/dgain_reg.m_nBlcGr:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -705,8 +743,6 @@ directive set /isp_top/isp_rawdns/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {
 directive set /isp_top/isp_rawdns/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/isp_rawdns/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/isp_rawdns/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/isp_rawdns/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/isp_rawdns/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/isp_rawdns/rawdns_reg.sigma:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/isp_rawdns/rawdns_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/isp_rawdns/rawdns_reg.Filterpara:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -729,8 +765,6 @@ directive set /isp_top/top_register.binningFrameWidth:rsc -MAP_TO_MODULE {[Direc
 directive set /isp_top/top_register.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/top_register.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/top_register.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/top_register.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/top_register.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/tpg_register.m_bTPG_en:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/tpg_register.m_nWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/tpg_register.m_nHeight:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -784,8 +818,6 @@ directive set /isp_top/demosaic/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[D
 directive set /isp_top/demosaic/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/demosaic/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/demosaic/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/demosaic/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/demosaic/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/demosaic/demosaic_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/demosaic/core/lineBuf:rsc -BLOCK_SIZE 8192
 directive set /isp_top/demosaic/core/main -PIPELINE_INIT_INTERVAL 1
@@ -803,8 +835,6 @@ directive set /isp_top/greenbalance2/top_reg.binningFrameWidth:rsc -MAP_TO_MODUL
 directive set /isp_top/greenbalance2/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/greenbalance2/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/greenbalance2/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/greenbalance2/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/greenbalance2/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/greenbalance2/gb_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/greenbalance2/gb_reg.win_size:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/greenbalance2/gb_reg.Lbound:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -835,8 +865,6 @@ directive set /isp_top/wbc/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/wbc/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/wbc/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/wbc/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/wbc/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/wbc/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/wbc/wbc_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/wbc/wbc_reg.m_nR:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/wbc/wbc_reg.m_nGr:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -854,8 +882,6 @@ directive set /isp_top/awb/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/awb/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/awb/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/awb/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/awb/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/awb/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/awb/awb_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/awb/awb_reg.coeff:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/awb/core/main -PIPELINE_INIT_INTERVAL 1
@@ -879,8 +905,6 @@ directive set /isp_top/cac/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/cac/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cac/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cac/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/cac/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/cac/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cac/cac_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cac/cac_reg.t_transient:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cac/cac_reg.t_edge:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -902,8 +926,6 @@ directive set /isp_top/ltm/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/ltm/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/ltm/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/ltm/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/ltm/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/ltm/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/ltm/ltm_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/ltm/ltm_reg.contrast:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/ltm/ltm_reg.ratio:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -925,8 +947,6 @@ directive set /isp_top/lut/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/lut/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/lut/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/lut/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/lut/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/lut/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/lut/lut_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/lut/lut_reg.size:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/lut/lut_reg.lines:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -942,8 +962,6 @@ directive set /isp_top/gtm/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/gtm/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/gtm/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/gtm/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/gtm/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/gtm/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/gtm/gtm_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/gtm/gtm_reg.m_bDitheringEnable:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/gtm/core/main -PIPELINE_INIT_INTERVAL 1
@@ -958,8 +976,6 @@ directive set /isp_top/cmc/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/cmc/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cmc/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cmc/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/cmc/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/cmc/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cmc/cmc_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cmc/cmc_reg.m_nGain:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cmc/cmc_reg.m_bCFCEnable:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -984,8 +1000,6 @@ directive set /isp_top/edgeenhancement/isp_top.binningFrameWidth:rsc -MAP_TO_MOD
 directive set /isp_top/edgeenhancement/isp_top.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/edgeenhancement/isp_top.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/edgeenhancement/isp_top.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/edgeenhancement/isp_top.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/edgeenhancement/isp_top.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/edgeenhancement/ee_top.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/edgeenhancement/ee_top.coeff:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/edgeenhancement/core/ee_lines:rsc -BLOCK_SIZE 8192
@@ -1037,8 +1051,6 @@ directive set /isp_top/yuv444dns/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[
 directive set /isp_top/yuv444dns/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/yuv444dns/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/yuv444dns/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/yuv444dns/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/yuv444dns/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/yuv444dns/yuvdns_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/yuv444dns/yuvdns_reg.ysigma2:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/yuv444dns/yuvdns_reg.yinvsigma2:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -1076,8 +1088,6 @@ directive set /isp_top/csc/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/csc/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/csc/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/csc/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/csc/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/csc/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/csc/csc_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/csc/csc_reg.coeff:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/csc/core/main -PIPELINE_INIT_INTERVAL 1
@@ -1109,8 +1119,6 @@ directive set /isp_top/lsc/topRegister.binningFrameWidth:rsc -MAP_TO_MODULE {[Di
 directive set /isp_top/lsc/topRegister.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/lsc/topRegister.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/lsc/topRegister.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/lsc/topRegister.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/lsc/topRegister.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/lsc/lscRegister.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/crop/top_reg.frameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/crop/top_reg.frameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -1123,8 +1131,6 @@ directive set /isp_top/crop/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direc
 directive set /isp_top/crop/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/crop/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/crop/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/crop/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/crop/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/crop/crop_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/crop/crop_reg.upper_left_x:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/crop/crop_reg.upper_left_y:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -1143,8 +1149,6 @@ directive set /isp_top/scaledown/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[
 directive set /isp_top/scaledown/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/scaledown/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/scaledown/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/scaledown/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/scaledown/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/scaledown/scaledown_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/scaledown/scaledown_reg.yuvpattern:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/scaledown/scaledown_reg.times:rsc -MAP_TO_MODULE {[DirectInput]}
@@ -1164,8 +1168,6 @@ directive set /isp_top/yfc/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Direct
 directive set /isp_top/yfc/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/yfc/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/yfc/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/yfc/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_top/yfc/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/yfc/yfc_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/yfc/yfc_reg.yuvpattern:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/cac/core/storeBuffer_r:rsc -BLOCK_SIZE 8192
@@ -1218,6 +1220,14 @@ directive set /isp_top/crop_register.lower_right_x:rsc -MAP_TO_MODULE {[DirectIn
 directive set /isp_top/crop_register.lower_right_y:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_top/crop_register.yuvpattern:rsc -MAP_TO_MODULE {[DirectInput]}
 go architect
+directive set /isp_top/afc/core/rawWindow_read:read_mem(lineBuffer:rsc(1)(0).@) -IGNORE_DEPENDENCY_FROM {line_write:write_mem(lineBuffer:rsc(0)(0).@) line_write:write_mem(lineBuffer:rsc(1)(0).@)#1 line_write:write_mem(lineBuffer:rsc(2)(0).@)#2 line_write:write_mem(lineBuffer:rsc(3)(0).@)#3 line_write:write_mem(lineBuffer:rsc(4)(0).@)#4 line_write:write_mem(lineBuffer:rsc(5)(0).@)#5 line_write:write_mem(lineBuffer:rsc(6)(0).@)#6 line_write:write_mem(lineBuffer:rsc(7)(0).@)#7}
+directive set /isp_top/afc/core/rawWindow_read:read_mem(lineBuffer:rsc(2)(0).@)#1 -IGNORE_DEPENDENCY_FROM {line_write:write_mem(lineBuffer:rsc(0)(0).@) line_write:write_mem(lineBuffer:rsc(1)(0).@)#1 line_write:write_mem(lineBuffer:rsc(2)(0).@)#2 line_write:write_mem(lineBuffer:rsc(3)(0).@)#3 line_write:write_mem(lineBuffer:rsc(4)(0).@)#4 line_write:write_mem(lineBuffer:rsc(5)(0).@)#5 line_write:write_mem(lineBuffer:rsc(6)(0).@)#6 line_write:write_mem(lineBuffer:rsc(7)(0).@)#7}
+directive set /isp_top/afc/core/rawWindow_read:read_mem(lineBuffer:rsc(3)(0).@)#2 -IGNORE_DEPENDENCY_FROM {line_write:write_mem(lineBuffer:rsc(0)(0).@) line_write:write_mem(lineBuffer:rsc(1)(0).@)#1 line_write:write_mem(lineBuffer:rsc(2)(0).@)#2 line_write:write_mem(lineBuffer:rsc(3)(0).@)#3 line_write:write_mem(lineBuffer:rsc(4)(0).@)#4 line_write:write_mem(lineBuffer:rsc(5)(0).@)#5 line_write:write_mem(lineBuffer:rsc(6)(0).@)#6 line_write:write_mem(lineBuffer:rsc(7)(0).@)#7}
+directive set /isp_top/afc/core/rawWindow_read:read_mem(lineBuffer:rsc(4)(0).@)#3 -IGNORE_DEPENDENCY_FROM {line_write:write_mem(lineBuffer:rsc(0)(0).@) line_write:write_mem(lineBuffer:rsc(1)(0).@)#1 line_write:write_mem(lineBuffer:rsc(2)(0).@)#2 line_write:write_mem(lineBuffer:rsc(3)(0).@)#3 line_write:write_mem(lineBuffer:rsc(4)(0).@)#4 line_write:write_mem(lineBuffer:rsc(5)(0).@)#5 line_write:write_mem(lineBuffer:rsc(6)(0).@)#6 line_write:write_mem(lineBuffer:rsc(7)(0).@)#7}
+directive set /isp_top/afc/core/rawWindow_read:read_mem(lineBuffer:rsc(5)(0).@)#4 -IGNORE_DEPENDENCY_FROM {line_write:write_mem(lineBuffer:rsc(0)(0).@) line_write:write_mem(lineBuffer:rsc(1)(0).@)#1 line_write:write_mem(lineBuffer:rsc(2)(0).@)#2 line_write:write_mem(lineBuffer:rsc(3)(0).@)#3 line_write:write_mem(lineBuffer:rsc(4)(0).@)#4 line_write:write_mem(lineBuffer:rsc(5)(0).@)#5 line_write:write_mem(lineBuffer:rsc(6)(0).@)#6 line_write:write_mem(lineBuffer:rsc(7)(0).@)#7}
+directive set /isp_top/afc/core/rawWindow_read:read_mem(lineBuffer:rsc(6)(0).@)#5 -IGNORE_DEPENDENCY_FROM {line_write:write_mem(lineBuffer:rsc(0)(0).@) line_write:write_mem(lineBuffer:rsc(1)(0).@)#1 line_write:write_mem(lineBuffer:rsc(2)(0).@)#2 line_write:write_mem(lineBuffer:rsc(3)(0).@)#3 line_write:write_mem(lineBuffer:rsc(4)(0).@)#4 line_write:write_mem(lineBuffer:rsc(5)(0).@)#5 line_write:write_mem(lineBuffer:rsc(6)(0).@)#6 line_write:write_mem(lineBuffer:rsc(7)(0).@)#7}
+directive set /isp_top/afc/core/rawWindow_read:read_mem(lineBuffer:rsc(7)(0).@)#6 -IGNORE_DEPENDENCY_FROM {line_write:write_mem(lineBuffer:rsc(0)(0).@) line_write:write_mem(lineBuffer:rsc(1)(0).@)#1 line_write:write_mem(lineBuffer:rsc(2)(0).@)#2 line_write:write_mem(lineBuffer:rsc(3)(0).@)#3 line_write:write_mem(lineBuffer:rsc(4)(0).@)#4 line_write:write_mem(lineBuffer:rsc(5)(0).@)#5 line_write:write_mem(lineBuffer:rsc(6)(0).@)#6 line_write:write_mem(lineBuffer:rsc(7)(0).@)#7}
+directive set /isp_top/afc/core/rawWindow_read:read_mem(lineBuffer:rsc(0)(0).@)#7 -IGNORE_DEPENDENCY_FROM {line_write:write_mem(lineBuffer:rsc(0)(0).@) line_write:write_mem(lineBuffer:rsc(1)(0).@)#1 line_write:write_mem(lineBuffer:rsc(2)(0).@)#2 line_write:write_mem(lineBuffer:rsc(3)(0).@)#3 line_write:write_mem(lineBuffer:rsc(4)(0).@)#4 line_write:write_mem(lineBuffer:rsc(5)(0).@)#5 line_write:write_mem(lineBuffer:rsc(6)(0).@)#6 line_write:write_mem(lineBuffer:rsc(7)(0).@)#7}
 directive set /isp_top/scaledown/core/scaledown_col:if:if:if:else:if:read_mem(y_linebuffer:rsc(0)(0).@) -IGNORE_DEPENDENCY_FROM {scaledown_col:if:if:if:if:write_mem(y_linebuffer:rsc(0)(0).@) scaledown_col:if:if:if:if:write_mem(u_linebuffer:rsc(0)(0).@) scaledown_col:if:if:if:if:write_mem(v_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:if:write_mem(y_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:if:write_mem(u_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:if:write_mem(v_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:else:if:write_mem(y_linebuffer:rsc(1)(0).@) scaledown_col:if:if:else:if:else:if:write_mem(u_linebuffer:rsc(1)(0).@) scaledown_col:if:if:else:if:else:if:write_mem(v_linebuffer:rsc(1)(0).@) scaledown_col:if:if:else:if:else:else:if:write_mem(y_linebuffer:rsc(2)(0).@) scaledown_col:if:if:else:if:else:else:if:write_mem(u_linebuffer:rsc(2)(0).@) scaledown_col:if:if:else:if:else:else:if:write_mem(v_linebuffer:rsc(2)(0).@)}
 directive set /isp_top/scaledown/core/scaledown_col:if:if:if:else:if:read_mem(u_linebuffer:rsc(0)(0).@) -IGNORE_DEPENDENCY_FROM {scaledown_col:if:if:if:if:write_mem(y_linebuffer:rsc(0)(0).@) scaledown_col:if:if:if:if:write_mem(u_linebuffer:rsc(0)(0).@) scaledown_col:if:if:if:if:write_mem(v_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:if:write_mem(y_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:if:write_mem(u_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:if:write_mem(v_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:else:if:write_mem(y_linebuffer:rsc(1)(0).@) scaledown_col:if:if:else:if:else:if:write_mem(u_linebuffer:rsc(1)(0).@) scaledown_col:if:if:else:if:else:if:write_mem(v_linebuffer:rsc(1)(0).@) scaledown_col:if:if:else:if:else:else:if:write_mem(y_linebuffer:rsc(2)(0).@) scaledown_col:if:if:else:if:else:else:if:write_mem(u_linebuffer:rsc(2)(0).@) scaledown_col:if:if:else:if:else:else:if:write_mem(v_linebuffer:rsc(2)(0).@)}
 directive set /isp_top/scaledown/core/scaledown_col:if:if:if:else:if:read_mem(v_linebuffer:rsc(0)(0).@) -IGNORE_DEPENDENCY_FROM {scaledown_col:if:if:if:if:write_mem(y_linebuffer:rsc(0)(0).@) scaledown_col:if:if:if:if:write_mem(u_linebuffer:rsc(0)(0).@) scaledown_col:if:if:if:if:write_mem(v_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:if:write_mem(y_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:if:write_mem(u_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:if:write_mem(v_linebuffer:rsc(0)(0).@) scaledown_col:if:if:else:if:else:if:write_mem(y_linebuffer:rsc(1)(0).@) scaledown_col:if:if:else:if:else:if:write_mem(u_linebuffer:rsc(1)(0).@) scaledown_col:if:if:else:if:else:if:write_mem(v_linebuffer:rsc(1)(0).@) scaledown_col:if:if:else:if:else:else:if:write_mem(y_linebuffer:rsc(2)(0).@) scaledown_col:if:if:else:if:else:else:if:write_mem(u_linebuffer:rsc(2)(0).@) scaledown_col:if:if:else:if:else:else:if:write_mem(v_linebuffer:rsc(2)(0).@)}

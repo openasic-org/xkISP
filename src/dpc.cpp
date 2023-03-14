@@ -175,18 +175,24 @@ void dpc(top_register top_reg, dpc_register dpc_reg, stream_u12& src, stream_u12
                     printf("\t%d\t%d\t%d\t%d\t%d\n",rawWindow[4][0].to_int(),rawWindow[4][1].to_int(),rawWindow[4][2].to_int(),rawWindow[4][3].to_int(),rawWindow[4][4].to_int());
                 }
                 #endif
+
+                if((row > 2) || ((row==2) && (col > 1))){
+                    dst.write(dstData);
+                }
+               
             }
             else
             {
                 dstData = srcData;
-            }
-            if((row > 2) || ((row==2) && (col > 1))){
                 dst.write(dstData);
             }
+            
         }
     }
-
-    addon_loop:for (uint14 cnt = 0; cnt < 2*top_reg.frameWidth + 2; cnt++){
-        dst.write(0);
+    if(dpc_reg.eb == 1){
+       addon_loop:for (uint14 cnt = 0; cnt < 2*top_reg.frameWidth + 2; cnt++){
+                    dst.write(0);
+                  }
     }
+    
 };

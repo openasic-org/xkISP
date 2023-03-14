@@ -93,8 +93,6 @@ directive set /gtm/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /gtm/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /gtm/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /gtm/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /gtm/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /gtm/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /gtm/gtm_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /gtm/gtm_reg.m_bDitheringEnable:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /gtm/gtm_reg.gtmTab_0:rsc -MAP_TO_MODULE ccs_sample_mem.ccs_ram_sync_dualport

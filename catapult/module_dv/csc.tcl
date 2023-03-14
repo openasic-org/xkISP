@@ -92,8 +92,6 @@ directive set /csc/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /csc/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /csc/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /csc/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /csc/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /csc/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /csc/csc_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /csc/csc_reg.coeff:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /csc/core/main -PIPELINE_INIT_INTERVAL 1

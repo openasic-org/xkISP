@@ -168,7 +168,6 @@ void ltm(top_register top_reg, ltm_register ltm_reg, stream_u42 &srcData, stream
 
 ltm_row:for(uint13 row = 0;row < frameHeight; row++){
     ltm_col:for(uint13 col = 0 ;col < frameWidth; col++){
-
             src42=srcData.read();
             #ifdef vivado
             r_src=src42>>28;

@@ -21,11 +21,89 @@ CCS_MAIN(int argc, char** argv)
 
     printf("\tTest for ISP gtm module!\n");
 
-    topParam.frameWidth = 640;
-    topParam.frameHeight = 480;
-    gtm_param.eb = 1;
-    gtm_param.m_bDitheringEnable = 1;
-    float gtm_gamma = 1.2;
+    const char* config_file = "../config/xkISP.cfg";
+
+    char buf[100] = "";
+    FILE* fp_config = fopen((const char*)config_file, "r");
+    char *p, *q;
+    char key[100], value[100];
+    int output_yuvpattern = 0; //0:444 1:422 2:420
+    int Noise_Mode;
+    int Img_Format;
+    float rawdns_sigma;
+    int noise_es_enable;
+    int lsc_config = 0;
+    float gtm_gamma = 0.0;
+
+    if(fp_config == NULL)
+    {
+        printf("\t Warning: no configuration file!\n");
+        printf("\t Will use default initial values!\n");
+    }
+    else
+    {
+        while (fgets(buf, 100, fp_config))
+        {
+            p = strchr(buf, '=');
+            q = strchr(buf, '\n');
+            if (p != NULL && q != NULL)
+            {
+                *q = '\0';
+                strncpy(key, buf, p - buf);
+                strcpy(value, p + 1);
+
+                if(strstr(key, "frame_width"))
+                {
+                    topParam.frameWidth = atoi(value);
+                    printf("frame_width = %d\n", topParam.frameWidth);
+                    continue;
+                }
+
+                if(strstr(key, "frame_height"))
+                {
+                    topParam.frameHeight = atoi(value);
+                    printf("frame_height = %d\n", topParam.frameHeight);
+                    continue;
+                }
+
+                if(strstr(key, "image_pattern"))
+                {
+                    topParam.imgPattern = atoi(value);
+                    printf("image_pattern = %d\n", topParam.imgPattern);
+                    continue;
+                }
+
+                if(strstr(key, "blc"))
+                {
+                    topParam.blc = atoi(value);
+                    printf("blc = %d\n", topParam.blc);
+                    continue;
+                }
+
+                if(strstr(key, "gtm_enable"))
+                {
+                    gtm_param.eb = atoi(value);
+                    printf("gtm_enable = %d\n", gtm_param.eb);
+                    continue;
+                }
+
+                if(strstr(key, "gtm_m_bDitheringEnable"))
+                {
+                    gtm_param.m_bDitheringEnable = atoi(value);
+                    printf("gtm_m_bDitheringEnable = %d\n", gtm_param.m_bDitheringEnable);
+                    continue;
+                }
+
+                if(strstr(key, "gtm_gamma"))
+                {
+                    gtm_gamma = atof(value);
+                    printf("gtm_gamma = %f\n", gtm_gamma);
+                    continue;
+                }
+            }
+        }
+    }
+
     uint10 tab[129] =
         {0, 20, 40, 64, 84, 108, 128, 148, 168, 196, 220, 244, 268, 296, 320, 344,
         368, 388, 408, 428, 448, 468, 488, 504, 524, 540, 556, 568, 584, 596, 608, 616,
@@ -54,15 +132,10 @@ CCS_MAIN(int argc, char** argv)
         gtm_param.gtmTab_1[x] = tab[x];
         gtm_param.gtmTab_2[x] = tab[x];
     }
-    int img_size = topParam.frameWidth * topParam.frameHeight;
 
-    uint16_t frameIn[3 * img_size];
-    uint16_t frameGolden[3 * img_size];
-    uint16_t frameOut[3 * img_size];
-
-
-    topParam.frameWidth = 640;
-    topParam.frameHeight = 480;
+    uint16_t frameIn[3];
+    uint16_t frameGolden[3];
+    uint16_t frameOut[3];
 
     //In
     FILE *fp_r1 = fopen(GTM_SRC1, "r");
@@ -71,12 +144,12 @@ CCS_MAIN(int argc, char** argv)
     }
 
     for (x = 0; x < topParam.frameWidth*topParam.frameHeight; x++) {
-        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
-        red = (uint14)frameIn[x];
-        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
-        green = (uint14)frameIn[x];
-        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
-        blue = (uint14)frameIn[x];
+        fread(&frameIn[0], sizeof(uint16_t), 1, fp_r1);
+        red = (uint14)frameIn[0];
+        fread(&frameIn[1], sizeof(uint16_t), 1, fp_r1);
+        green = (uint14)frameIn[1];
+        fread(&frameIn[2], sizeof(uint16_t), 1, fp_r1);
+        blue = (uint14)frameIn[2];
         srcdata = red;
         srcdata = (srcdata << 14) + green;
         srcdata = (srcdata << 14) + blue;
@@ -90,9 +163,6 @@ CCS_MAIN(int argc, char** argv)
         printf("Can not open golden file!\n");
     }
 
-    for (x = 0; x < 3*topParam.frameWidth*topParam.frameHeight; x++) {
-        fread(&frameGolden[x], sizeof(uint16_t), 1, fp_g1);
-    }
     printf("\tEnvironment set up!\n");
 
     //Execution
@@ -112,19 +182,19 @@ CCS_MAIN(int argc, char** argv)
         red_o = dstdata >> 28;
         green_o = (dstdata >> 14) & 0x3fff;
         blue_o = dstdata & 0x3fff;
-        frameOut[3*x] = red_o;
-        frameOut[3*x+1] = green_o;
-        frameOut[3*x+2] = blue_o;
-    }
-
-    fwrite(frameOut, sizeof(uint16_t), (topParam.frameWidth * topParam.frameHeight), fp_w1);
-
-    //Checker
-    for (x = 0; x < topParam.frameWidth*topParam.frameHeight; x++) {
-        if(frameGolden[x] != frameOut[x]) {
+        frameOut[0] = red_o;
+        frameOut[1] = green_o;
+        frameOut[2] = blue_o;
+        fwrite(&frameOut[0], sizeof(uint16_t), 1, fp_w1);
+        fwrite(&frameOut[1], sizeof(uint16_t), 1, fp_w1);
+        fwrite(&frameOut[2], sizeof(uint16_t), 1, fp_w1);
+        fread(&frameGolden[0], sizeof(uint16_t), 1, fp_g1);
+        fread(&frameGolden[1], sizeof(uint16_t), 1, fp_g1);
+        fread(&frameGolden[2], sizeof(uint16_t), 1, fp_g1);
+        if((frameGolden[0] != frameOut[0]) || (frameGolden[1] != frameOut[1]) || (frameGolden[2] != frameOut[2])) {
             printf("\t\tFirst mismatch in pixel %d, channel %d!\n", x/3, x%3);
-            cout << "Golden = " << setbase(16) << frameGolden[x] << endl;
-            cout << "result = " << setbase(16) << frameOut[x] << endl;
+            cout << "Golden = " << setbase(16) << frameGolden[x%3] << endl;
+            cout << "result = " << setbase(16) << frameOut[x%3] << endl;
             exit(0);
         }
     }

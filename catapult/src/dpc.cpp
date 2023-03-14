@@ -167,7 +167,7 @@ void dpc(top_register top_reg, dpc_register dpc_reg, stream_u12& src, stream_u12
                     dstData = 0;
                 }
                 #ifdef DEBUG
-                if((row == ROW_TEST + 2) && (col == COL_TEST + 2)) {
+                if((row == top_reg.ROW_TEST + 2) && (col == top_reg.COL_TEST + 2)) {
                     printf("\t dpc_in = %d\n",srcData.to_int());
                     printf("\t dpc_out = %d\n",dstData.to_int());
                     printf("\t%d\t%d\n",row.to_int(),col.to_int());

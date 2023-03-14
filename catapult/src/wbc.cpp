@@ -19,7 +19,7 @@ void wbc(top_register top_reg, wbc_register wbc_reg, stream_u12 &src, stream_u12
             src_t = src.read();
             if(wbc_reg.m_nEb == 1) {
                 int16  dst_val;
-                uint15 gain_w;
+                uint16 gain_w;
                 uint2  bayerPattern = (((y & 1) << 1) + (x & 1))^top_reg.imgPattern;
 
                 if (bayerPattern == 0) {
@@ -35,7 +35,7 @@ void wbc(top_register top_reg, wbc_register wbc_reg, stream_u12 &src, stream_u12
                 dst_val = (((src_t - top_reg.blc) * gain_w + 2048) >> 12) + top_reg.blc;
                 dst_t = wbc_clip(dst_val,0,4095);
                 #ifdef DEBUG
-                if((x == COL_TEST) && (y == ROW_TEST)) {
+                if((x == top_reg.COL_TEST) && (y == top_reg.ROW_TEST)) {
                     printf("\t wbc_in = %x\n",src_t.to_int());
                     printf("\t wbc_out = %x\n",dst_t.to_int());
                 }

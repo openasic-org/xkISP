@@ -12,8 +12,6 @@ using namespace std;
 //#define vivado
 #define catapult
 //#define DEBUG
-//#define ROW_TEST 4
-//#define COL_TEST 4
 
 #ifdef vivado
     #include <ap_int.h>
@@ -111,7 +109,9 @@ using namespace std;
     #include <ac_math.h>
     using namespace ac_math;
     typedef ac_int<2,true>   int2;
+    typedef ac_int<3,true>   int3;
     typedef ac_int<4,true>   int4;
+    typedef ac_int<5,true>   int5;
     typedef ac_int<6,true>   int6;
     typedef ac_int<8,true>   int8;
     typedef ac_int<9,true>   int9;
@@ -125,6 +125,7 @@ using namespace std;
     typedef ac_int<17,true>  int17;
     typedef ac_int<18,true>  int18;
     typedef ac_int<19,true>  int19;
+    typedef ac_int<20,true>  int20;
     typedef ac_int<21,true>  int21;
     typedef ac_int<22,true>  int22;
     typedef ac_int<23,true>  int23;
@@ -209,8 +210,10 @@ typedef struct {
     uint13  binningFrameHeight;  //13 bits;
     uint13  scalerFrameWidth;  //13 bits;
     uint13  scalerFrameHeight; //13 bits;
+    #ifdef DEBUG
     uint13  ROW_TEST;
     uint13  COL_TEST;
+    #endif
 } top_register;
 #endif
 

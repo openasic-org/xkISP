@@ -282,7 +282,7 @@ typedef struct {
 void yfc(top_register top_register, yfc_register yfc_register, stream_u30& src, stream_u10& y_dst, stream_u10& u_dst, stream_u10& v_dst);
 
 // yuvdns module header
-typedef struct
+typedef struct 
 {
     bool eb; //1 bit
     uint14 ysigma2;// 14 bit
@@ -292,7 +292,7 @@ typedef struct
     uint4 yfilt;//4 bit
     uint4 uvfilt;//4 bit
     uint5 yinvfilt;//5 bit
-    uint5 uvinvfilt;//5 bit
+    uint5 uvinvfilt;//5 bit 
     uint14 yH2;//14 bit
     uint18 yinvH2; //18 bit
     uint14 uvH2;//14 bit

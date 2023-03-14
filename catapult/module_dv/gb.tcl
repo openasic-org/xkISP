@@ -94,8 +94,6 @@ directive set /greenbalance2/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[Dire
 directive set /greenbalance2/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /greenbalance2/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /greenbalance2/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /greenbalance2/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /greenbalance2/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /greenbalance2/gb_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /greenbalance2/gb_reg.win_size:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /greenbalance2/gb_reg.Lbound:rsc -MAP_TO_MODULE {[DirectInput]}

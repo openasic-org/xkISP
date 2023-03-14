@@ -34,17 +34,23 @@ rawdns_filter=50
 rawdns_bitwidth=12
 
 #awb
-awb_enable=1
+awb_enable=0
 awb_mink=1 
 
 #wbc
 wbc_enable=1
-wbc_rgain=4821
+wbc_rgain=4821 
 wbc_ggain=4096
 wbc_bgain=6486
-
+#4821
+#4096 
+#6486
 #gb
 gb_enable=1
+
+#fcr
+fcr_enable=0
+fcr_hthr=0
 
 #ee
 ee_enable=1
@@ -53,12 +59,24 @@ ee_coeff=30
 #cmc
 cmc_enable=1
 
+#aec
+aec_enable=1
+
 #histeq
 histeq_enable=0
 
 #gtm
 gtm_enable=1
 gtm_gamma=1.2
+
+#dehaze
+dehaze_enable=0
+dehaze_strength=128
+
+#lut
+lut_enable=0
+lut_size=32
+lut_interpolation=2
 
 #ltm 
 ltm_enable=1

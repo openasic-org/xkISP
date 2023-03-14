@@ -108,7 +108,7 @@ void demosaic(top_register top_reg, demosaic_register demosaic_reg, Stream_t& sr
                     dst_t.set_slc(0,outPixel.b);
                 #endif
                 #ifdef DEBUG
-                    if((row == ROW_TEST + 2) && (col == COL_TEST + 2)) {
+                    if((row == top_reg.ROW_TEST + 2) && (col == top_reg.COL_TEST + 2)) {
                         printf("\t%x\t%x\n",row.to_int(),col.to_int());
                         printf("\tpattern = %d\n",bayerPattern.to_int());
                         printf("\t%x\t%x\t%x\t%x\t%x\n",rawWindow[0][0].to_int(),rawWindow[0][1].to_int(),rawWindow[0][2].to_int(),rawWindow[0][3].to_int(),rawWindow[0][4].to_int());

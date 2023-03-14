@@ -199,8 +199,6 @@ directive set /isp_rawdns/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectI
 directive set /isp_rawdns/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_rawdns/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_rawdns/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_rawdns/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /isp_rawdns/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_rawdns/rawdns_reg.sigma:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_rawdns/rawdns_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /isp_rawdns/rawdns_reg.Filterpara:rsc -MAP_TO_MODULE {[DirectInput]}

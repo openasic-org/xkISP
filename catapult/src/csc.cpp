@@ -64,7 +64,7 @@ void csc(top_register top_reg, csc_register csc_reg, stream_u42 &src, stream_u30
             dst_t.set_slc(0,dst_w[2]);
             #endif
             #ifdef DEBUG
-            if((y == ROW_TEST) && (x == COL_TEST)){
+            if((y == top_reg.ROW_TEST) && (x == top_reg.COL_TEST)){
                 printf("\tcsc_in = %x\t%x\t%x\n",src_w[0].to_int(),src_w[1].to_int(),src_w[2].to_int());
                 printf("\tcsc_out = %x\t%x\t%x\n",dst_w[0].to_int(),dst_w[1].to_int(),dst_w[2].to_int());
             }

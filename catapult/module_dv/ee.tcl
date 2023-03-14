@@ -93,8 +93,6 @@ directive set /edgeenhancement/isp_top.binningFrameWidth:rsc -MAP_TO_MODULE {[Di
 directive set /edgeenhancement/isp_top.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /edgeenhancement/isp_top.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /edgeenhancement/isp_top.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /edgeenhancement/isp_top.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /edgeenhancement/isp_top.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /edgeenhancement/ee_top.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /edgeenhancement/ee_top.coeff:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /edgeenhancement/eeprocess:guass_55.rom:rsc -MAP_TO_MODULE {[Register]}

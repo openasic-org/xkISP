@@ -95,7 +95,7 @@ void tpg(top_register top_reg, tpg_register tpg_reg, stream_u12 &src, stream_u12
                 dst_t = src.read();
                 dst.write(dst_t);
                 #ifdef DEBUG
-                if((i == ROW_TEST) && (j == COL_TEST)) {
+                if((i == top_reg.ROW_TEST) && (j == top_reg.COL_TEST)) {
                     printf("\t tpg_in = %x\n",dst_t.to_int());
                 }
                 #endif

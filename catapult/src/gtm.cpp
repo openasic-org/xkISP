@@ -123,10 +123,12 @@ void gtm(top_register top_reg, gtm_register& gtm_reg, stream_u42 &src, stream_u4
                     }
                     dst_w[2] = gtm_clip(temp3,0,16383);
                     #ifdef DEBUG
-                    if((x == COL_TEST) & (y == ROW_TEST)){
+                    if((x == top_reg.COL_TEST) & (y == top_reg.ROW_TEST)){
                         printf("\tgtm_tmp = %x\t%x\t%x\n",temp1.to_int(),temp2.to_int(),temp3.to_int());
                         printf("\tgtm_index = %x\t%x\t%x\n",index.to_int(),y_pos0.to_int(),y_pos1.to_int());
-                        printf("\tgtm_data = %x\t%x\t%x\n",src_w[k].to_int(),dst_w[k].to_int(),y_value.to_int());
+                        printf("\tgtm_data = %x\t%x\t%x\n",src_w[0].to_int(),dst_w[0].to_int(),y_value.to_int());
+                        printf("\tgtm_data = %x\t%x\t%x\n",src_w[1].to_int(),dst_w[1].to_int(),y_value.to_int());
+                        printf("\tgtm_data = %x\t%x\t%x\n",src_w[2].to_int(),dst_w[2].to_int(),y_value.to_int());
                     }
                     #endif
                // }

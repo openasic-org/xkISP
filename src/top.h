@@ -21,6 +21,7 @@ using namespace std;
     typedef ap_int<2>   int2;
     typedef ap_int<3>   int3;
     typedef ap_int<4>   int4;
+    typedef ap_int<5>   int5;
     typedef ap_int<6>   int6;
     typedef ap_int<8>   int8;
     typedef ap_int<9>   int9;
@@ -34,6 +35,7 @@ using namespace std;
     typedef ap_int<17>  int17;
     typedef ap_int<18>  int18;
     typedef ap_int<19>  int19;
+    typedef ap_int<20>  int20;
     typedef ap_int<21>  int21;
     typedef ap_int<22>  int22;
     typedef ap_int<23>  int23;
@@ -79,11 +81,15 @@ using namespace std;
     typedef ap_uint<36> uint36;
     typedef ap_uint<40> uint40;
     typedef ap_uint<42> uint42;
+    typedef ap_uint<47> uint47;
+    typedef ap_uint<56> uint56;
+
     typedef hls::stream<uint10> stream_u10;
     typedef hls::stream<uint12> stream_u12;
     typedef hls::stream<uint30> stream_u30;
     typedef hls::stream<uint36> stream_u36;
     typedef hls::stream<uint42> stream_u42;
+    typedef hls::stream<uint56> stream_u56;
 
     typedef struct {
         uint12 data;

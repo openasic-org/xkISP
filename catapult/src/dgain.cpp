@@ -49,7 +49,7 @@ void dgain(top_register top_reg, dgain_register dgain_reg, stream_u12 &src, stre
             dst_val = (dst_tmp >> GAIN_BITS) + top_reg.blc;
             dst_t = dgain_clip(dst_val,0,4095);
             #ifdef DEBUG
-            if((x == COL_TEST) && (y == ROW_TEST)) {
+            if((x == top_reg.COL_TEST) && (y == top_reg.ROW_TEST)) {
                 printf("\t dgain_in = %x\n",src_t.to_int());
                 printf("\t dgain_val = %x\n",dst_val.to_int());
                 printf("\t dgain_out = %x\n",dst_t.to_int());

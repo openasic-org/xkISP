@@ -95,8 +95,6 @@ directive set /crop/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /crop/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /crop/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /crop/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /crop/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /crop/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /crop/crop_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /crop/crop_reg.upper_left_x:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /crop/crop_reg.upper_left_y:rsc -MAP_TO_MODULE {[DirectInput]}

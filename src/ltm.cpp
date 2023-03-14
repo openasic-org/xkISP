@@ -74,9 +74,9 @@ void bilaterS(ltm_register ltm_reg, uint16 rWindow[9][9],uint16 gWindow[9][9],ui
     int32 composelayer=((baselayer*contrast+2048)>>12)+detaillayer;
     uint16 u_complayer=exp10tab[composelayer];
     
-    uint14 r_tmp=u_complayer*rWindow[4][4]/l_center;
-    uint14 g_tmp=u_complayer*gWindow[4][4]/l_center;
-    uint14 b_tmp=u_complayer*bWindow[4][4]/l_center;
+    uint14 r_tmp=u_complayer*rWindow[4][4]/((l_center>(int32)1)?l_center:(int32)1);
+    uint14 g_tmp=u_complayer*gWindow[4][4]/((l_center>(int32)1)?l_center:(int32)1);
+    uint14 b_tmp=u_complayer*bWindow[4][4]/((l_center>(int32)1)?l_center:(int32)1);
     
     r_dst=ltm_clip((ratio*r_tmp+4)>>3,LTM_Max_Value,0);
     g_dst=ltm_clip((ratio*g_tmp+4)>>3,LTM_Max_Value,0);

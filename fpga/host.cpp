@@ -23,10 +23,10 @@
 #include <string>
 #include <cstring>
 
-const std::string TOP_SRC1 = "/home/ctl/xww_opensource/xk-isp/Ali_ISP_HLS/tv/input.raw";
-const std::string TOP_CONFIG = "/home/ctl/xww_opensource/xk-isp/Ali_ISP_HLS/tv/hls_param.txt";
+const std::string TOP_SRC1 = "../tv/input.raw";
+const std::string TOP_CONFIG = "../tv/hls_param.txt";
 const std::string TOP_DST1 = "../../../output.yuv";
-const std::string TOP_GODEN1 = "/home/ctl/xww_opensource/xk-isp/Ali_ISP_HLS/tv/crop_out_packed.yuv";
+const std::string TOP_GODEN1 = "../tv/crop_out_packed.yuv";
 
 typedef in_t img_t;
 const int IMG_WIDTH = 640;
@@ -336,11 +336,11 @@ void config_reg_host(std::vector<tab_t, aligned_allocator<tab_t> > & arg_config)
 
     lsc_reg.blockHeight = (top_reg.frameHeight - 1) / 12 + 1;
     lsc_reg.blockWidth = (top_reg.frameWidth - 1) / 16 + 1;
-    printf("\ttop_reg.frameWidth = %d\n",top_reg.frameWidth.to_int());
-    printf("\tlsc_reg.blockWidth = %d\n",lsc_reg.blockWidth.to_int());
+    //printf("\ttop_reg.frameWidth = %d\n",top_reg.frameWidth.to_int());
+    //printf("\tlsc_reg.blockWidth = %d\n",lsc_reg.blockWidth.to_int());
     lsc_reg.blockHeight_1 = 32768 / lsc_reg.blockHeight;
     lsc_reg.blockWidth_1 = 524288 / lsc_reg.blockWidth.to_int();
-    printf("\tlsc_reg.blockWidth_1 = %d\n",lsc_reg.blockWidth_1.to_int());
+    //printf("\tlsc_reg.blockWidth_1 = %d\n",lsc_reg.blockWidth_1.to_int());
 
     int16 m_nGain[12] = {6709, -2591, -22, 0, -632, 5336, -607, 0, 156, -2970, 6912, 0};
 

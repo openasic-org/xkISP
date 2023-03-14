@@ -95,8 +95,6 @@ directive set /tpg/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /tpg/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /tpg/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /tpg/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /tpg/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /tpg/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /tpg/tpg_reg.m_bTPG_en:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /tpg/tpg_reg.m_nWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /tpg/tpg_reg.m_nHeight:rsc -MAP_TO_MODULE {[DirectInput]}

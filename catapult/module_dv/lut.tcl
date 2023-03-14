@@ -94,8 +94,6 @@ directive set /lut/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lut/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lut/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lut/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /lut/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /lut/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lut/lut_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lut/lut_reg.size:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lut/lut_reg.lines:rsc -MAP_TO_MODULE {[DirectInput]}

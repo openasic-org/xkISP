@@ -41,7 +41,7 @@ void awb(top_register top_reg, awb_register& awb_reg, stream_u12 &src, stream_u1
             dst_t = src_t;
             dst.write(dst_t);
             #ifdef DEBUG
-            if ((x == ROW_TEST)&&(y == COL_TEST)) {
+            if ((x == top_reg.ROW_TEST)&&(y == top_reg.COL_TEST)) {
                  printf("\t%d\n",src_t.to_int());
             }
             #endif

@@ -92,8 +92,6 @@ directive set /demosaic/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInp
 directive set /demosaic/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /demosaic/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /demosaic/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /demosaic/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /demosaic/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /demosaic/demosaic_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /demosaic/core/lineBuf:rsc -BLOCK_SIZE 8192
 directive set /demosaic/core/main -PIPELINE_INIT_INTERVAL 1

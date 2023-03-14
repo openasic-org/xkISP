@@ -206,8 +206,6 @@ directive set /yuv444dns/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectIn
 directive set /yuv444dns/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yuv444dns/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yuv444dns/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /yuv444dns/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /yuv444dns/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yuv444dns/yuvdns_reg.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yuv444dns/yuvdns_reg.ysigma2:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yuv444dns/yuvdns_reg.yinvsigma2:rsc -MAP_TO_MODULE {[DirectInput]}

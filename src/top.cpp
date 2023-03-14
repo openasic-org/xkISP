@@ -41,8 +41,8 @@ void store_out(const crop_register crop_register, stream_u10 &dst_y,stream_u10 &
 
 };
 void isp_top(stream_u12 &src,
-	     uint16* y_ptr,
-	     uint16* u_ptr,
+	         uint16* y_ptr,
+	         uint16* u_ptr,
              uint16* v_ptr,
              //stream_u10 &dst_y,
              //stream_u10 &dst_u,

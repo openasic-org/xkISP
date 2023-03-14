@@ -1,4 +1,5 @@
 #include "top.h"
+#include "afc.h"
 #include "tpg.h"
 #include "dgain.h"
 #include "lsc.h"
@@ -16,6 +17,7 @@
 #include "cac.h"
 #include "csc.h"
 #include "yfc.h"
+#include "sde.h"
 #include "yuvdns.h"
 #include "scaledown.h"
 #include "crop.h"
@@ -25,6 +27,7 @@ void isp_top(stream_u12 &src,
              stream_u10 &dst_u,
              stream_u10 &dst_v,
              top_register top_register,
+             afc_register afc_register,
              tpg_register tpg_register,
              dgain_register dgain_register,
              lsc_register lsc_register,
@@ -42,6 +45,7 @@ void isp_top(stream_u12 &src,
              cac_register cac_register,
              csc_register csc_register,
              yfc_register yfc_register,
+             sde_register sde_register,
              yuvdns_register yuvdns_register,
              scaledown_register scaledown_register,
              crop_register crop_register
@@ -103,6 +107,7 @@ void isp_top(stream_u12 &src,
 #endif
 
 #ifdef catapult
+    static stream_u12 afc_tpg_data;
     static stream_u12 tpg_dgain_data;
     static stream_u12 dgain_lsc_data;
     static stream_u12 lsc_dpc_data;
@@ -119,9 +124,12 @@ void isp_top(stream_u12 &src,
     static stream_u42 ltm_cac_data;
     static stream_u42 cac_csc_data;
     static stream_u30 csc_yfc_data;
-    static stream_u10 yfc_yuvdns_data_y;
-    static stream_u10 yfc_yuvdns_data_u;
-    static stream_u10 yfc_yuvdns_data_v;
+    static stream_u10 yfc_sde_data_y;
+    static stream_u10 yfc_sde_data_u;
+    static stream_u10 yfc_sde_data_v;
+    static stream_u10 sde_yuvdns_data_y;
+    static stream_u10 sde_yuvdns_data_u;
+    static stream_u10 sde_yuvdns_data_v;
     static stream_u10 yuvdns_scale_data_y;
     static stream_u10 yuvdns_scale_data_u;
     static stream_u10 yuvdns_scale_data_v;
@@ -129,8 +137,8 @@ void isp_top(stream_u12 &src,
     static stream_u10 scale_crop_data_u;
     static stream_u10 scale_crop_data_v;
 #endif
-
-    tpg(top_register, tpg_register, src, tpg_dgain_data);
+    afc(top_register, afc_register, src, afc_tpg_data);
+    tpg(top_register, tpg_register, afc_tpg_data, tpg_dgain_data);
     dgain(top_register, dgain_register, tpg_dgain_data, dgain_lsc_data);
     lsc(top_register, lsc_register, dgain_lsc_data, lsc_dpc_data);
     dpc(top_register, dpc_register, lsc_dpc_data, dpc_rawdns_data);
@@ -146,8 +154,9 @@ void isp_top(stream_u12 &src,
     ltm(top_register, ltm_register, lut_ltm_data, ltm_cac_data);
     cac(top_register, cac_register, ltm_cac_data, cac_csc_data);
     csc(top_register, csc_register, cac_csc_data, csc_yfc_data);
-    yfc(top_register, yfc_register, csc_yfc_data, yfc_yuvdns_data_y, yfc_yuvdns_data_u, yfc_yuvdns_data_v);
-    yuv444dns(top_register, yuvdns_register, yfc_yuvdns_data_y, yfc_yuvdns_data_u, yfc_yuvdns_data_v, yuvdns_scale_data_y, yuvdns_scale_data_u, yuvdns_scale_data_v);
+    yfc(top_register, yfc_register, csc_yfc_data, yfc_sde_data_y, yfc_sde_data_u, yfc_sde_data_v);
+    sde(top_register, sde_register, yfc_sde_data_y, yfc_sde_data_u, yfc_sde_data_v, sde_yuvdns_data_y, sde_yuvdns_data_u, sde_yuvdns_data_v);
+    yuv444dns(top_register, yuvdns_register, sde_yuvdns_data_y, sde_yuvdns_data_u, sde_yuvdns_data_v, yuvdns_scale_data_y, yuvdns_scale_data_u, yuvdns_scale_data_v);
     scaledown(top_register, scaledown_register, yuvdns_scale_data_y, yuvdns_scale_data_u, yuvdns_scale_data_v, scale_crop_data_y, scale_crop_data_u, scale_crop_data_v);
     crop(top_register, crop_register, scale_crop_data_y, scale_crop_data_u, scale_crop_data_v, dst_y, dst_u, dst_v);
 };

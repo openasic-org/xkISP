@@ -2,6 +2,8 @@
 #define TPG_SRC1 "../../../../../tv/input.raw"
 #define TPG_DST1 "../../../../../tv/tpg_hls.raw"
 #define TPG_GOLDEN1 "../../../../../tv/tpg_out.raw"
+//AFC
+#define AFC_SRC1 "../../../../../tv/input.raw"
 //Dgain
 #define Dgain_SRC1 "../../../../../tv/input.raw"
 #define Dgain_DST1 "../../../../../tv/dgain_hls.raw"
@@ -43,6 +45,10 @@
 #define CMC_SRC1 "../../../../../tv/ee_out.rgbh"
 #define CMC_DST1 "../../../../../tv/cmc_hls.rgb"
 #define CMC_GOLDEN1 "../../../../../tv/cmc_out.rgb"
+//AEC
+#define AEC_SRC1 "../../../../../tv/cmc_out.rgb"
+#define AEC_DST1 "../../../../../tv/aec_hls.rgb"
+#define AEC_GOLDEN1 "../../../../../tv/aec_out.rgb"
 //GTM
 #define GTM_SRC1 "../../../../../tv/cmc_out.rgb"
 #define GTM_DST1 "../../../../../tv/gtm_hls.rgb"
@@ -57,6 +63,10 @@
 #define LTM_SRC1    "../../../../../tv/gtm_out.rgb" //tmp
 #define LTM_DST1    "../../../../../tv/ltm_hls.rgb"
 #define LTM_GOLDEN1 "../../../../../tv/ltm_out.rgb"
+//DEHAZE
+#define DEHAZE_SRC1    "../../../../../tv/gtm_out.rgb"
+#define DEHAZE_DST1    "../../../../../tv/dehaze_hls.rgb"
+#define DEHAZE_GOLDEN1 "../../../../../tv/dehaze_out.rgb"
 //CAC
 #define CAC_SRC1 "../../../../../tv/ltm_out.rgb"
 #define CAC_DST1 "../../../../../tv/cac_hls.rgb"

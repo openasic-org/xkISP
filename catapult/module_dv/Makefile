@@ -17,6 +17,9 @@ clean:
 tpg:
 	$(cmd) tpg.tcl &
 
+afc:
+	$(cmd) afc.tcl &
+
 dgain:
 	$(cmd) dgain.tcl &
 
@@ -74,4 +77,5 @@ crop:
 top:
 	$(cmd) top.tcl &
 
-
+top_multifile:
+	$(cmd) top_multifile.tcl &

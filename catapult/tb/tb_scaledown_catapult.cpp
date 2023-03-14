@@ -24,8 +24,83 @@ CCS_MAIN(int argc, char** argv)
 
     printf("\tTest for ISP scaledown module!\n");
 
-    topParam.frameWidth = 640;
-    topParam.frameHeight = 480;
+    const char* config_file = "../config/xkISP_HLS.cfg";
+
+    char buf[100] = "";
+    FILE* fp_config = fopen((const char*)config_file, "r");
+    char *p, *q;
+    char key[100], value[100];
+    int output_yuvpattern = 0; //0:444 1:422 2:420
+    int Noise_Mode;
+    int Img_Format;
+    float rawdns_sigma;
+    int noise_es_enable;
+    int lsc_config = 0;
+    float gtm_gamma = 0.0;
+
+    if(fp_config == NULL)
+    {
+        printf("\t Warning: no configuration file!\n");
+        printf("\t Will use default initial values!\n");
+    }
+    else
+    {
+        while (fgets(buf, 100, fp_config))
+        {
+            p = strchr(buf, '=');
+            q = strchr(buf, '\n');
+            if (p != NULL && q != NULL)
+            {
+                *q = '\0';
+                strncpy(key, buf, p - buf);
+                strcpy(value, p + 1);
+
+                if(strstr(key, "frame_width"))
+                {
+                    topParam.frameWidth = atoi(value);
+                    printf("frame_width = %d\n", topParam.frameWidth);
+                    continue;
+                }
+
+                if(strstr(key, "frame_height"))
+                {
+                    topParam.frameHeight = atoi(value);
+                    printf("frame_height = %d\n", topParam.frameHeight);
+                    continue;
+                }
+
+                if(strstr(key, "image_pattern"))
+                {
+                    topParam.imgPattern = atoi(value);
+                    printf("image_pattern = %d\n", topParam.imgPattern);
+                    continue;
+                }
+
+                if(strstr(key, "blc"))
+                {
+                    topParam.blc = atoi(value);
+                    printf("blc = %d\n", topParam.blc);
+                    continue;
+                }
+
+                if(strstr(key, "scaledown_enable"))
+                {
+                    scaledown_param.m_nEb = atoi(value);
+                    printf("scaledown_enable = %d\n", scaledown_param.m_nEb);
+                    continue;
+                }
+
+                if(strstr(key, "output_times"))
+                {
+                    scaledown_param.times = atoi(value);
+                    //crop_param.times = scaledown_param.times;
+                    printf("output_times = %d\n", scaledown_param.times);
+                    continue;
+                }
+            }
+        }
+    }
+
     uint13 out_width_1 = topParam.frameWidth;
     uint13 out_height_1 = topParam.frameHeight;
     scaledown_param.times = 2;
@@ -35,13 +110,9 @@ CCS_MAIN(int argc, char** argv)
     uint13 out_width_3 = topParam.frameWidth / scaledown_param.times;
     uint13 out_height_3 = topParam.frameHeight / scaledown_param.times;
 
-    int img_size = topParam.frameWidth * topParam.frameHeight;
-
-    uint16_t frameIn_1[3 * img_size];
-    uint16_t frameGolden_1[3 * img_size];
-    uint16_t frameOut_1[3 * img_size];
-
-    scaledown_param.m_nEb = 0;
+    uint16_t frameIn_1[3];
+    uint16_t frameGolden_1;
+    uint16_t frameOut_1;
 
     //In
     FILE *fp_r1 = fopen(scaledown_SRC1, "r");
@@ -52,20 +123,20 @@ CCS_MAIN(int argc, char** argv)
     for (x = 0; x < 3 * topParam.frameWidth * topParam.frameHeight; x++) {
         if(x < topParam.frameWidth * topParam.frameHeight)
         {
-            fread(&frameIn_1[x], sizeof(uint16_t), 1, fp_r1);
-            y_in_data = (uint10)frameIn_1[x];
+            fread(&frameIn_1[0], sizeof(uint16_t), 1, fp_r1);
+            y_in_data = (uint10)frameIn_1[0];
             y_src.write(y_in_data);
         }
         else if(x < 2 * topParam.frameWidth * topParam.frameHeight)
         {
-            fread(&frameIn_1[x], sizeof(uint16_t), 1, fp_r1);
-            u_in_data = (uint10)frameIn_1[x];
+            fread(&frameIn_1[1], sizeof(uint16_t), 1, fp_r1);
+            u_in_data = (uint10)frameIn_1[1];
             u_src.write(u_in_data);
         }
         else
         {
-            fread(&frameIn_1[x], sizeof(uint16_t), 1, fp_r1);
-            v_in_data = (uint10)frameIn_1[x];
+            fread(&frameIn_1[2], sizeof(uint16_t), 1, fp_r1);
+            v_in_data = (uint10)frameIn_1[2];
             v_src.write(v_in_data);
         }
     }
@@ -77,9 +148,6 @@ CCS_MAIN(int argc, char** argv)
         printf("Can not open golden file!\n");
     }
 
-    for (x = 0; x < 3 * out_width_1 * out_height_1; x++) {
-        fread(&frameGolden_1[x], sizeof(uint16_t), 1, fp_g1);
-    }
     printf("\tEnvironment set up!\n");
 
     //Execution
@@ -96,32 +164,32 @@ CCS_MAIN(int argc, char** argv)
         printf("\tCan not open write back file!\n");
     }
 
-    for (x = 0; x < 3 * out_width_1 * out_height_1; x++) {
-        if(x < out_width_1 * out_height_1)
+    for (x = 0; x < 3 * topParam.frameWidth * topParam.frameHeight; x++) {
+        if(x < topParam.frameWidth * topParam.frameHeight)
         {
             y_out_data = y_dst.read();
-            frameOut_1[x] = y_out_data;
+            frameOut_1 = y_out_data;
+            fwrite(&frameOut_1, sizeof(uint16_t), 1, fp_w1);
         }
-        else if(x < 2 * out_width_1 * out_height_1)
+        else if(x < 2 * topParam.frameWidth * topParam.frameHeight)
         {
             u_out_data = u_dst.read();
-            frameOut_1[x] = u_out_data;
+            frameOut_1 = u_out_data;
+            fwrite(&frameOut_1, sizeof(uint16_t), 1, fp_w1);
         }
         else
         {
             v_out_data = v_dst.read();
-            frameOut_1[x] = v_out_data;
+            frameOut_1 = v_out_data;
+            fwrite(&frameOut_1, sizeof(uint16_t), 1, fp_w1);
         }
-    }
 
-    fwrite(frameOut_1, sizeof(uint16_t), (3 * out_width_1 * out_height_1), fp_w1);
+        fread(&frameGolden_1, sizeof(uint16_t), 1, fp_g1);
 
-    //Checker
-    for (x = 0; x < 3 * out_width_1 * out_height_1; x++) {
-        if(frameGolden_1[x] != frameOut_1[x]) {
-            printf("\t\tFirst mismatch in pixel %d, channel %d!\n", x/3, x%3);
-            cout << "Golden = " << setbase(16) << frameGolden_1[x] << endl;
-            cout << "result = " << setbase(16) << frameOut_1[x] << endl;
+        if (frameGolden_1 != frameOut_1) {
+            printf("\t\tFirst mismatch in pixel %d, channel %d!\n", x / 3, x % 3);
+            cout << "Golden = " << setbase(10) << frameGolden_1 << endl;
+            cout << "result = " << setbase(10) << frameOut_1 << endl;
             exit(0);
         }
     }

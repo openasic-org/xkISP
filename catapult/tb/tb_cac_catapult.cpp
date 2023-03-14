@@ -5,7 +5,7 @@
 
 CCS_MAIN(int argc, char** argv)
 {
-    top_register top_param;
+    top_register topParam;
     cac_register cac_param;
     ac_channel<uint42> src;
     ac_channel<uint42> dst;
@@ -21,18 +21,95 @@ CCS_MAIN(int argc, char** argv)
     uint42 dstdata;
 
     printf("\tTest for ISP cac module!\n");
-    memset(&top_param, 0, sizeof(top_register));
+    memset(&topParam, 0, sizeof(top_register));
     memset(&cac_param, 0, sizeof(cac_register));
-    top_param.frameWidth = 640;
-    top_param.frameHeight = 480;
-    cac_param.eb = 1;
-    cac_param.t_transient = 7000;
-    cac_param.t_edge = 4000;
-    int img_size = top_param.frameWidth * top_param.frameHeight;
 
-    uint16_t frameIn[3 * img_size];
-    uint16_t frameGolden[3 * img_size];
-    uint16_t frameOut[3 * img_size];
+    const char* config_file = "../config/xkISP.cfg";
+
+    char buf[100] = "";
+    FILE* fp_config = fopen((const char*)config_file, "r");
+    char *p, *q;
+    char key[100], value[100];
+    int output_yuvpattern = 0; //0:444 1:422 2:420
+    int Noise_Mode;
+    int Img_Format;
+    float rawdns_sigma;
+    int noise_es_enable;
+    int lsc_config = 0;
+    float gtm_gamma = 0.0;
+
+    if(fp_config == NULL)
+    {
+        printf("\t Warning: no configuration file!\n");
+        printf("\t Will use default initial values!\n");
+    }
+    else
+    {
+        while (fgets(buf, 100, fp_config))
+        {
+            p = strchr(buf, '=');
+            q = strchr(buf, '\n');
+            if (p != NULL && q != NULL)
+            {
+                *q = '\0';
+                strncpy(key, buf, p - buf);
+                strcpy(value, p + 1);
+
+                if(strstr(key, "frame_width"))
+                {
+                    topParam.frameWidth = atoi(value);
+                    printf("frame_width = %d\n", topParam.frameWidth);
+                    continue;
+                }
+
+                if(strstr(key, "frame_height"))
+                {
+                    topParam.frameHeight = atoi(value);
+                    printf("frame_height = %d\n", topParam.frameHeight);
+                    continue;
+                }
+
+                if(strstr(key, "image_pattern"))
+                {
+                    topParam.imgPattern = atoi(value);
+                    printf("image_pattern = %d\n", topParam.imgPattern);
+                    continue;
+                }
+
+                if(strstr(key, "blc"))
+                {
+                    topParam.blc = atoi(value);
+                    printf("blc = %d\n", topParam.blc);
+                    continue;
+                }
+
+                if(strstr(key, "cac_enable"))
+                {
+                    cac_param.eb = atoi(value);
+                    printf("cac_enable = %d\n", cac_param.eb);
+                    continue;
+                }
+
+                if(strstr(key, "cac_t_transient"))
+                {
+                    cac_param.t_transient = atoi(value);
+                    printf("cac_t_transient = %d\n", cac_param.t_transient);
+                    continue;
+                }
+
+                if(strstr(key, "cac_t_edge"))
+                {
+                    cac_param.t_edge = atoi(value);
+                    printf("cac_t_edge = %d\n", cac_param.t_edge);
+                    continue;
+                }
+            }
+        }
+    }
+
+    uint16_t frameIn[3];
+    uint16_t frameGolden[3];
+    uint16_t frameOut[3];
 
     //In
     FILE *fp_r1 = fopen(CAC_SRC1, "r");
@@ -40,13 +117,13 @@ CCS_MAIN(int argc, char** argv)
         printf("Can not open input file!\n");
     }
 
-    for (x = 0; x < top_param.frameWidth*top_param.frameHeight; x++) {
-        fread(&frameIn[3 * x], sizeof(uint16_t), 1, fp_r1);
-        red = (uint14)frameIn[3 * x];
-        fread(&frameIn[3 * x + 1], sizeof(uint16_t), 1, fp_r1);
-        green = (uint14)frameIn[3 * x + 1];
-        fread(&frameIn[3 * x + 2], sizeof(uint16_t), 1, fp_r1);
-        blue = (uint14)frameIn[3 * x + 2];
+    for (x = 0; x < topParam.frameWidth*topParam.frameHeight; x++) {
+        fread(&frameIn[0], sizeof(uint16_t), 1, fp_r1);
+        red = (uint14)frameIn[0];
+        fread(&frameIn[1], sizeof(uint16_t), 1, fp_r1);
+        green = (uint14)frameIn[1];
+        fread(&frameIn[2], sizeof(uint16_t), 1, fp_r1);
+        blue = (uint14)frameIn[2];
         srcdata = red;
         srcdata = (srcdata << 14) + green;
         srcdata = (srcdata << 14) + blue;
@@ -60,14 +137,10 @@ CCS_MAIN(int argc, char** argv)
         printf("Can not open golden file!\n");
     }
 
-    for (x = 0; x < 3*top_param.frameWidth*top_param.frameHeight; x++) {
-        fread(&frameGolden[x], sizeof(uint16_t), 1, fp_g1);
-    }
-
     printf("\tEnvironment set up!\n");
 
     //Execution
-    CCS_DESIGN(cac) (top_param, cac_param, src, dst);
+    CCS_DESIGN(cac) (topParam, cac_param, src, dst);
 
     printf("\tExecution completed!\n");
     printf("\t%d\n",dst.size());
@@ -78,26 +151,24 @@ CCS_MAIN(int argc, char** argv)
         printf("\tCan not open write back file!\n");
     }
 
-    for (x = 0; x < top_param.frameWidth*top_param.frameHeight; x++) {
+    for (x = 0; x < topParam.frameWidth*topParam.frameHeight; x++) {
         dstdata = dst.read();
         red_o = dstdata >> 28;
-        green_o = uint14(dstdata >> 14);
-        blue_o = uint14(dstdata);
-        frameOut[3*x] = red_o;
-        frameOut[3*x+1] = green_o;
-        frameOut[3*x+2] = blue_o;
-    }
-
-    fwrite(frameOut, sizeof(uint16_t), 3*(top_param.frameWidth * top_param.frameHeight), fp_w1);
-
-    //Checker
-    for (x = 0; x < 3*top_param.frameWidth*top_param.frameHeight; x++) {
-        if(frameGolden[x] != frameOut[x]) {
+        green_o = (dstdata >> 14) & 0x3fff;
+        blue_o = dstdata & 0x3fff;
+        frameOut[0] = red_o;
+        frameOut[1] = green_o;
+        frameOut[2] = blue_o;
+        fwrite(&frameOut[0], sizeof(uint16_t), 1, fp_w1);
+        fwrite(&frameOut[1], sizeof(uint16_t), 1, fp_w1);
+        fwrite(&frameOut[2], sizeof(uint16_t), 1, fp_w1);
+        fread(&frameGolden[0], sizeof(uint16_t), 1, fp_g1);
+        fread(&frameGolden[1], sizeof(uint16_t), 1, fp_g1);
+        fread(&frameGolden[2], sizeof(uint16_t), 1, fp_g1);
+        if((frameGolden[0] != frameOut[0]) || (frameGolden[1] != frameOut[1]) || (frameGolden[2] != frameOut[2])) {
             printf("\t\tFirst mismatch in pixel %d, channel %d!\n", x/3, x%3);
-            printf("\t\tFirst mismatch in pixel %d, row = %d!, col = %d!\n", x/3, (x/3)/top_param.frameWidth.to_int(), ((x/3)%top_param.frameWidth.to_int()));
-            cout << "Golden = " << setbase(10) << frameGolden[x] << endl;
-            cout << "result = " << setbase(10) << frameOut[x] << endl;
-            cout << "in = " << setbase(10) << frameIn[x] << endl;
+            cout << "Golden = " << setbase(10) << frameGolden[x%3] << endl;
+            cout << "result = " << setbase(10) << frameOut[x%3] << endl;
             exit(0);
         }
     }

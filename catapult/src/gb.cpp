@@ -155,7 +155,7 @@ void greenbalance2(top_register top_reg, gb_register gb_reg, stream_u12& src, st
                 dst.write(pixel_out);
             }
             #ifdef DEBUG
-            if((row == ROW_TEST + 3) && (col == COL_TEST + 3)) {
+            if((row == top_reg.ROW_TEST + 3) && (col == top_reg.COL_TEST + 3)) {
                 printf("\t%x\t%x\n",row.to_int(),col.to_int());
                 printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[0][0].to_int(),gb_block[0][1].to_int(),gb_block[0][2].to_int(),gb_block[0][3].to_int(),gb_block[0][4].to_int(),gb_block[0][5].to_int(),gb_block[0][6].to_int());
                 printf("\t%x\t%x\t%x\t%x\t%x\t%x\t%x\n",gb_block[1][0].to_int(),gb_block[1][1].to_int(),gb_block[1][2].to_int(),gb_block[1][3].to_int(),gb_block[1][4].to_int(),gb_block[1][5].to_int(),gb_block[1][6].to_int());

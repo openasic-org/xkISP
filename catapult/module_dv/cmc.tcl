@@ -94,8 +94,6 @@ directive set /cmc/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /cmc/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /cmc/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /cmc/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /cmc/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /cmc/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /cmc/cmc_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /cmc/cmc_reg.m_nGain:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /cmc/cmc_reg.m_bCFCEnable:rsc -MAP_TO_MODULE {[DirectInput]}

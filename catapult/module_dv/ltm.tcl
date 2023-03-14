@@ -217,8 +217,6 @@ directive set /ltm/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /ltm/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /ltm/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /ltm/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /ltm/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /ltm/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /ltm/ltm_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /ltm/ltm_reg.contrast:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /ltm/ltm_reg.ratio:rsc -MAP_TO_MODULE {[DirectInput]}

@@ -93,8 +93,6 @@ directive set /yfc/top_reg.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yfc/top_reg.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yfc/top_reg.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yfc/top_reg.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /yfc/top_reg.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /yfc/top_reg.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yfc/yfc_reg.m_nEb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yfc/yfc_reg.yuvpattern:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /yfc/core/u_linebuffer:rsc -BLOCK_SIZE 8192

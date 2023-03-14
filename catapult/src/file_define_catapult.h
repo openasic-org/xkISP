@@ -2,6 +2,8 @@
 #define TPG_SRC1 "../../tv/input.raw"
 #define TPG_DST1 "../../tv/tpg_hls.raw"
 #define TPG_GOLDEN1 "../../tv/tpg_out.raw"
+//AFC
+#define AFC_SRC1 "../../tv/input.raw"
 //Dgain
 #define Dgain_SRC1 "../../tv/input.raw"
 #define Dgain_DST1 "../../tv/dgain_hls.raw"
@@ -73,6 +75,10 @@
 #define YFC_GOLDEN2 "../../tv/yfc_out_422.yuv"
 #define YFC_DST3 "../../tv/yfc_hls_420.yuv"
 #define YFC_GOLDEN3 "../../tv/yfc_out_420.yuv"
+//SDE
+#define SDE_SRC1 "../../tv/sde_out.yuv"
+#define SDE_DST1 "../../tv/sde_hls_.yuv"
+#define SDE_GOLDEN1 "../../tv/yuvdns_out.yuv"
 //YUVDNS
 #define YUVDNS_SRC1 "../../tv/yfc_out.yuv"
 #define YUVDNS_DST1 "../../tv/yuvdns_hls_60_80.yuv"

@@ -161,7 +161,7 @@ void isp_rawdns(top_register& top_reg, rawdns_register& rawdns_reg, stream_u12& 
             dst_data = rawdns_process(rawdns_block, rawdns_reg,ksigma2,i,j,nlm_en);
 
             #ifdef  DEBUG
-                if ((i == ROW_TEST + 5)&&(j == COL_TEST + 5))
+                if ((i == top_reg.ROW_TEST + 5)&&(j == top_reg.COL_TEST + 5))
                 {
                     printf("\t%d\t%d\n",i.to_int(),j.to_int());
                     printf("\t%d\n",src_data.to_int());

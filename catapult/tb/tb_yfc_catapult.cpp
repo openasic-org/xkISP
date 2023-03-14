@@ -22,16 +22,78 @@ CCS_MAIN(int argc, char** argv)
     uint10 v_out_data;
 
     printf("\tTest for ISP yfc module!\n");
-    topParam.frameWidth = 640;
-    topParam.frameHeight = 480;
-    int img_size = topParam.frameWidth * topParam.frameHeight;
+    const char* config_file = "../config/xkISP_HLS.cfg";
 
-    uint16_t frameIn[3 * img_size];
-    uint16_t frameGolden_1[3 * img_size];
-    uint16_t frameOut_1[3 * img_size];
+    char buf[100] = "";
+    FILE* fp_config = fopen((const char*)config_file, "r");
+    char *p, *q;
+    char key[100], value[100];
+    int output_yuvpattern = 0; //0:444 1:422 2:420
+    int Noise_Mode;
+    int Img_Format;
+    float rawdns_sigma;
+    int noise_es_enable;
+    int lsc_config = 0;
+    float gtm_gamma = 0.0;
 
-    //yuv444
-    yfc_param.m_nEb = 0;
+    if(fp_config == NULL)
+    {
+        printf("\t Warning: no configuration file!\n");
+        printf("\t Will use default initial values!\n");
+    }
+    else
+    {
+        while (fgets(buf, 100, fp_config))
+        {
+            p = strchr(buf, '=');
+            q = strchr(buf, '\n');
+            if (p != NULL && q != NULL)
+            {
+                *q = '\0';
+                strncpy(key, buf, p - buf);
+                strcpy(value, p + 1);
+
+                if(strstr(key, "frame_width"))
+                {
+                    topParam.frameWidth = atoi(value);
+                    printf("frame_width = %d\n", topParam.frameWidth);
+                    continue;
+                }
+
+                if(strstr(key, "frame_height"))
+                {
+                    topParam.frameHeight = atoi(value);
+                    printf("frame_height = %d\n", topParam.frameHeight);
+                    continue;
+                }
+
+                if(strstr(key, "image_pattern"))
+                {
+                    topParam.imgPattern = atoi(value);
+                    printf("image_pattern = %d\n", topParam.imgPattern);
+                    continue;
+                }
+
+                if(strstr(key, "blc"))
+                {
+                    topParam.blc = atoi(value);
+                    printf("blc = %d\n", topParam.blc);
+                    continue;
+                }
+
+                if(strstr(key, "yfc_enable"))
+                {
+                    yfc_param.m_nEb = atoi(value);
+                    printf("lut_yfc = %d\n", yfc_param.m_nEb);
+                    continue;
+                }
+            }
+        }
+    }
+
+    uint16_t frameIn[3];
+    uint16_t frameGolden_1;
+    uint16_t frameOut_1;
 
     //In
     FILE* fp_r1 = fopen(YFC_SRC, "r");
@@ -40,12 +102,12 @@ CCS_MAIN(int argc, char** argv)
     }
 
     for (x = 0; x < topParam.frameWidth * topParam.frameHeight; x++) {
-        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
-        y_in_data = (uint10)frameIn[x];
-        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
-        u_in_data = (uint10)frameIn[x];
-        fread(&frameIn[x], sizeof(uint16_t), 1, fp_r1);
-        v_in_data = (uint10)frameIn[x];
+        fread(&frameIn[0], sizeof(uint16_t), 1, fp_r1);
+        y_in_data = (uint10)frameIn[0];
+        fread(&frameIn[1], sizeof(uint16_t), 1, fp_r1);
+        u_in_data = (uint10)frameIn[1];
+        fread(&frameIn[2], sizeof(uint16_t), 1, fp_r1);
+        v_in_data = (uint10)frameIn[2];
         srcdata = y_in_data;
         srcdata = (srcdata << 10) + u_in_data;
         srcdata = (srcdata << 10) + v_in_data;
@@ -59,9 +121,6 @@ CCS_MAIN(int argc, char** argv)
         printf("Can not open golden file!\n");
     }
 
-    for (x = 0; x < 3 * topParam.frameWidth * topParam.frameHeight; x++) {
-        fread(&frameGolden_1[x], sizeof(uint16_t), 1, fp_g1);
-    }
     printf("\tEnvironment set up!\n");
 
     //Execution
@@ -82,32 +141,33 @@ CCS_MAIN(int argc, char** argv)
         if(x < topParam.frameWidth * topParam.frameHeight)
         {
             y_out_data = y_dst.read();
-            frameOut_1[x] = y_out_data;
+            frameOut_1 = y_out_data;
+            fwrite(&frameOut_1, sizeof(uint16_t), 1, fp_w1);
         }
         else if(x < 2 * topParam.frameWidth * topParam.frameHeight)
         {
             u_out_data = u_dst.read();
-            frameOut_1[x] = u_out_data;
+            frameOut_1 = u_out_data;
+            fwrite(&frameOut_1, sizeof(uint16_t), 1, fp_w1);
         }
         else
         {
             v_out_data = v_dst.read();
-            frameOut_1[x] = v_out_data;
+            frameOut_1 = v_out_data;
+            fwrite(&frameOut_1, sizeof(uint16_t), 1, fp_w1);
         }
-    }
 
-    fwrite(frameOut_1, sizeof(uint16_t), (3 * topParam.frameWidth * topParam.frameHeight), fp_w1);
+        fread(&frameGolden_1, sizeof(uint16_t), 1, fp_g1);
 
-    //Checker
-    for (x = 0; x < 3 * topParam.frameWidth * topParam.frameHeight; x++) {
-        if (frameGolden_1[x] != frameOut_1[x]) {
+        if (frameGolden_1 != frameOut_1) {
             printf("\t\tFirst mismatch in pixel %d, channel %d!\n", x / 3, x % 3);
-            cout << "Golden = " << setbase(16) << frameGolden_1[x] << endl;
-            cout << "result = " << setbase(16) << frameOut_1[x] << endl;
+            cout << "Golden = " << setbase(16) << frameGolden_1 << endl;
+            cout << "result = " << setbase(16) << frameOut_1 << endl;
             exit(0);
         }
-
     }
+
+    //Checker
     printf("\tTest passed!\n");
 
     fclose(fp_r1);

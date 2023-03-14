@@ -328,7 +328,7 @@ void lsc(top_register topRegister, lsc_register &lscRegister, stream_u12 &src, s
             }
             else
             {
-                dst_t = src_t;
+                dst_t = src_w;
             }
             dst.write(dst_t);
         }

@@ -138,7 +138,7 @@ void lsc(top_register topRegister, lsc_register &lscRegister, stream_u12 &src, s
                 dst_t = lsc_clip(dst_value, 0, 4095);
 
                 #ifdef DEBUG
-                if((x == COL_TEST) && (y == ROW_TEST)) {
+                if((x == topRegister.COL_TEST) && (y == topRegister.ROW_TEST)) {
                     printf("\t lsc_in = %d\n", src_t.to_int());
                     printf("\t line_is_blue = %d\n", line_is_blue);
                     printf("\t gain_lt = %d\n", gain_lt.to_int());
@@ -345,7 +345,7 @@ void lsc(top_register topRegister, lsc_register &lscRegister, stream_u12 &src, s
             }
             else
             {
-                dst_t = src_t;
+                dst_t = src_w;
             }
             dst.write(dst_t);
         }

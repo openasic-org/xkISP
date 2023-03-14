@@ -95,8 +95,6 @@ directive set /lsc/topRegister.binningFrameWidth:rsc -MAP_TO_MODULE {[DirectInpu
 directive set /lsc/topRegister.binningFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lsc/topRegister.scalerFrameWidth:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lsc/topRegister.scalerFrameHeight:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /lsc/topRegister.ROW_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
-directive set /lsc/topRegister.COL_TEST:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lsc/lscRegister.eb:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lsc/lscRegister.blockHeight:rsc -MAP_TO_MODULE {[DirectInput]}
 directive set /lsc/lscRegister.blockWidth:rsc -MAP_TO_MODULE {[DirectInput]}
